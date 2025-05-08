@@ -57,7 +57,8 @@ Bu proje, eğitim kurumları için tasarlanmış kapsamlı bir öğrenci yöneti
 <div align="center">
   <img src="https://github.com/user-attachments/assets/d65e2a66-d427-45a2-8281-0e3062b7555f" alt="Veri Silme" width="80%">
 </div>
-### Verileri Excele AKtarma
+
+### Verileri Excele Aktarma
 *Güvenli ve hızlı şekilde verileri excel çıktısı olarak alabiliyorsunuz!*
 
 <div align="center">
