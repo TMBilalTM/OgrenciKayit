@@ -2,11 +2,18 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Data;
+using System.IO; // ekle
 
 namespace OgrenciKayit
 {
     public partial class AdminDashboard : Form
     {
+        // Pagination helpers
+        private int studentsPage = 1, studentsPageSize = 50, studentsTotal = 0;
+        private int departmentsPage = 1, departmentsPageSize = 50, departmentsTotal = 0;
+        private int schoolsPage = 1, schoolsPageSize = 50, schoolsTotal = 0;
+        private int citiesPage = 1, citiesPageSize = 50, citiesTotal = 0;
+
         public AdminDashboard()
         {
             InitializeComponent();
@@ -173,14 +180,25 @@ namespace OgrenciKayit
             this.WindowState = FormWindowState.Minimized;
         }
 
+        private void UpdateStatusStrips()
+        {
+            toolStripStatusLabelStudents.Text = $"Öðrenciler: {studentsTotal} kayýt";
+            toolStripStatusLabelDepartments.Text = $"Bölümler: {departmentsTotal} kayýt";
+            toolStripStatusLabelSchools.Text = $"Okullar: {schoolsTotal} kayýt";
+            toolStripStatusLabelCities.Text = $"Þehirler: {citiesTotal} kayýt";
+        }
+
         // --- Departments CRUD & Search ---
         private void LoadDepartments(string search = "")
         {
-            dgvDepartments.DataSource = DatabaseHelper.GetDepartments(search);
+            var result = PaginationHelper.GetDepartmentsPaged(search, departmentsPage, departmentsPageSize, out departmentsTotal);
+            dgvDepartments.DataSource = result;
             if (dgvDepartments.Columns.Contains("Name"))
                 dgvDepartments.Columns["Name"].HeaderText = "Bölüm Adý";
             if (dgvDepartments.Columns.Contains("Id"))
                 dgvDepartments.Columns["Id"].Visible = false;
+            UpdateStatusStrips();
+            dgvDepartments.ScrollBars = ScrollBars.Both;
         }
 
         private void btnDepartmentSearch_Click(object sender, EventArgs e)
@@ -228,11 +246,14 @@ namespace OgrenciKayit
         // --- Cities CRUD & Search ---
         private void LoadCities(string search = "")
         {
-            dgvCities.DataSource = DatabaseHelper.GetCities(search);
+            var result = PaginationHelper.GetCitiesPaged(search, citiesPage, citiesPageSize, out citiesTotal);
+            dgvCities.DataSource = result;
             if (dgvCities.Columns.Contains("Name"))
                 dgvCities.Columns["Name"].HeaderText = "Þehir Adý";
             if (dgvCities.Columns.Contains("Id"))
                 dgvCities.Columns["Id"].Visible = false;
+            UpdateStatusStrips();
+            dgvCities.ScrollBars = ScrollBars.Both;
         }
 
         private void btnCitySearch_Click(object sender, EventArgs e)
@@ -280,7 +301,8 @@ namespace OgrenciKayit
         // --- Schools CRUD & Search ---
         private void LoadSchools(string search = "")
         {
-            dgvSchools.DataSource = DatabaseHelper.GetSchools(search);
+            var result = DatabaseHelper.GetSchools(search);
+            dgvSchools.DataSource = result;
             if (dgvSchools.Columns.Contains("Name"))
                 dgvSchools.Columns["Name"].HeaderText = "Okul Adý";
             if (dgvSchools.Columns.Contains("CityName"))
@@ -288,7 +310,9 @@ namespace OgrenciKayit
             if (dgvSchools.Columns.Contains("Id"))
                 dgvSchools.Columns["Id"].Visible = false;
             if (dgvSchools.Columns.Contains("CityId"))
-                dgvSchools.Columns["CityId"].Visible = false;
+                dgvSchools.Columns["CityId"].Visible = false; // CityId gizli, CityName görünüyor
+            UpdateStatusStrips();
+            dgvSchools.ScrollBars = ScrollBars.Both;
         }
 
         private void btnSchoolSearch_Click(object sender, EventArgs e)
@@ -339,16 +363,55 @@ namespace OgrenciKayit
         // --- Students CRUD & Search ---
         private void LoadStudents(string search = "")
         {
-            dgvStudents.DataSource = DatabaseHelper.GetStudents(search);
+            var result = PaginationHelper.GetStudentsPaged(search, studentsPage, studentsPageSize, out studentsTotal);
+            dgvStudents.DataSource = result;
+
+            // Sadece önemli sütunlar görünsün, diðerleri gizli kalsýn
             if (dgvStudents.Columns.Contains("id"))
                 dgvStudents.Columns["id"].Visible = false;
+            if (dgvStudents.Columns.Contains("bolum_id"))
+                dgvStudents.Columns["bolum_id"].Visible = false;
+            if (dgvStudents.Columns.Contains("okul_id"))
+                dgvStudents.Columns["okul_id"].Visible = false;
+            if (dgvStudents.Columns.Contains("onceki_okul_id"))
+                dgvStudents.Columns["onceki_okul_id"].Visible = false;
+            if (dgvStudents.Columns.Contains("kktc_kimlik_no"))
+                dgvStudents.Columns["kktc_kimlik_no"].Visible = false;
+            if (dgvStudents.Columns.Contains("veli_telefon"))
+                dgvStudents.Columns["veli_telefon"].Visible = false;
+            if (dgvStudents.Columns.Contains("adres"))
+                dgvStudents.Columns["adres"].Visible = false;
+            if (dgvStudents.Columns.Contains("email"))
+                dgvStudents.Columns["email"].Visible = false;
+            if (dgvStudents.Columns.Contains("telefon"))
+                dgvStudents.Columns["telefon"].Visible = false;
+            if (dgvStudents.Columns.Contains("kayit_tarihi"))
+                dgvStudents.Columns["kayit_tarihi"].Visible = false;
+
+            // Baþlýklarý ayarla (görünenler)
             if (dgvStudents.Columns.Contains("ogrenci_no"))
                 dgvStudents.Columns["ogrenci_no"].HeaderText = "Öðrenci No";
             if (dgvStudents.Columns.Contains("ad"))
                 dgvStudents.Columns["ad"].HeaderText = "Ad";
             if (dgvStudents.Columns.Contains("soyad"))
                 dgvStudents.Columns["soyad"].HeaderText = "Soyad";
-            // ...set other headers as needed...
+            if (dgvStudents.Columns.Contains("cinsiyet"))
+                dgvStudents.Columns["cinsiyet"].HeaderText = "Cinsiyet";
+            if (dgvStudents.Columns.Contains("bolum"))
+                dgvStudents.Columns["bolum"].HeaderText = "Bölüm";
+            if (dgvStudents.Columns.Contains("okul"))
+                dgvStudents.Columns["okul"].HeaderText = "Okul";
+            if (dgvStudents.Columns.Contains("sinif"))
+                dgvStudents.Columns["sinif"].HeaderText = "Sýnýf";
+            if (dgvStudents.Columns.Contains("yil"))
+                dgvStudents.Columns["yil"].HeaderText = "Yýl";
+            if (dgvStudents.Columns.Contains("veli_adi"))
+                dgvStudents.Columns["veli_adi"].HeaderText = "Veli Adý";
+            if (dgvStudents.Columns.Contains("onceki_okul"))
+                dgvStudents.Columns["onceki_okul"].HeaderText = "Önceki Okul";
+
+            UpdateStatusStrips();
+            dgvStudents.ScrollBars = ScrollBars.Both;
         }
 
         private void btnStudentSearch_Click(object sender, EventArgs e)
@@ -407,6 +470,63 @@ namespace OgrenciKayit
             {
                 DatabaseHelper.DeleteStudent(id);
                 LoadStudents();
+            }
+        }
+
+        private void btnExportExcel_Click(object sender, EventArgs e)
+        {
+            DataTable exportTable = null;
+            string fileName = "veriler.xlsx";
+            if (panelStudents.Visible)
+            {
+                exportTable = dgvStudents.DataSource as DataTable;
+                fileName = "ogrenciler.xlsx";
+            }
+            else if (panelDepartments.Visible)
+            {
+                exportTable = dgvDepartments.DataSource as DataTable;
+                fileName = "bolumler.xlsx";
+            }
+            else if (panelSchools.Visible)
+            {
+                exportTable = dgvSchools.DataSource as DataTable;
+                fileName = "okullar.xlsx";
+            }
+            else if (panelCities.Visible)
+            {
+                exportTable = dgvCities.DataSource as DataTable;
+                fileName = "sehirler.xlsx";
+            }
+
+            if (exportTable == null || exportTable.Rows.Count == 0)
+            {
+                MessageBox.Show("Aktarýlacak veri yok.", "Uyarý", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Excel Dosyasý (*.xlsx)|*.xlsx|CSV Dosyasý (*.csv)|*.csv";
+                sfd.FileName = fileName;
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        if (Path.GetExtension(sfd.FileName).ToLower() == ".csv")
+                        {
+                            ExcelExportHelper.ExportToCsv(exportTable, sfd.FileName);
+                        }
+                        else
+                        {
+                            ExcelExportHelper.ExportToExcel(exportTable, sfd.FileName);
+                        }
+                        MessageBox.Show("Veriler baþarýyla dýþa aktarýldý.", "Baþarýlý", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Dýþa aktarma sýrasýnda bir hata oluþtu.\n\n" + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
         }
     }

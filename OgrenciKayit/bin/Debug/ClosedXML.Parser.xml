@@ -1,0 +1,1277 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ClosedXML.Parser</name>
+    </assembly>
+    <members>
+        <member name="T:ClosedXML.Parser.BinaryOperation">
+            <summary>
+            Binary operations that can occur in the formula.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.Concat">
+            <summary><c>&amp;</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.Addition">
+            <summary><c>+</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.Subtraction">
+            <summary><c>-</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.Multiplication">
+            <summary><c>*</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.Division">
+            <summary><c>/</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.Power">
+            <summary><c>^</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.GreaterOrEqualThan">
+            <summary><c>&gt;=</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.LessOrEqualThan">
+            <summary><c>&lt;=</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.LessThan">
+            <summary><c>&lt;</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.GreaterThan">
+            <summary><c>&gt;</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.NotEqual">
+            <summary><c>!=</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.Equal">
+            <summary><c>=</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.Union">
+            <summary><c>,</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.Intersection">
+            <summary><c>SPACE</c></summary>
+        </member>
+        <member name="F:ClosedXML.Parser.BinaryOperation.Range">
+            <summary><c>:</c></summary>
+        </member>
+        <member name="T:ClosedXML.Parser.CopyVisitor">
+            <summary>
+            A visitor that generates the identical formula for the parsed formula based on passed arguments.
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.FormulaConverter">
+            <summary>
+            Convert between <em>A1</em> and <em>R1C1</em> style formulas.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.FormulaConverter.ToR1C1(System.String,System.Int32,System.Int32)">
+            <summary>
+            Convert a formula in <em>A1</em> form to the <em>R1C1</em> form.
+            </summary>
+            <param name="formulaA1">Formula text.</param>
+            <param name="row">The row origin of R1C1, from 1 to 1048576.</param>
+            <param name="col">The column origin of R1C1, from 1 to 16384.</param>
+            <returns>Formula converted to R1C1.</returns>
+            <exception cref="T:ClosedXML.Parser.ParsingException">The formula is not parseable.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.FormulaConverter.ToA1(System.String,System.Int32,System.Int32)">
+            <summary>
+            Convert a formula in <em>R1C1</em> form to the <em>A1</em> form.
+            </summary>
+            <param name="formulaR1C1">Formula text in R1C1.</param>
+            <param name="row">The row origin of R1C1, from 1 to 1048576.</param>
+            <param name="col">The column origin of R1C1, from 1 to 16384.</param>
+            <returns>Formula converted to A1.</returns>
+            <exception cref="T:ClosedXML.Parser.ParsingException">The formula is not parseable.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.FormulaConverter.ModifyA1(System.String,System.Int32,System.Int32,ClosedXML.Parser.IAstFactory{ClosedXML.Parser.TransformedSymbol,ClosedXML.Parser.TransformedSymbol,ClosedXML.Parser.ModContext})">
+            <summary>
+            Modify the formula using the passed <paramref name="factory"/>.
+            </summary>
+            <param name="formulaA1">Original formula in A1 style.</param>
+            <param name="row">Row number of formula.</param>
+            <param name="col">Column number of formula.</param>
+            <param name="factory">Visitor to transform the formula.</param>
+        </member>
+        <member name="T:ClosedXML.Parser.FormulaParser`3">
+            <summary>
+            A parser of Excel formulas, with main purpose of creating an abstract syntax tree.
+            </summary>
+            <remarks>
+            An implementation is a recursive descent parser, based on the ANTLR grammar.
+            </remarks>
+            <typeparam name="TScalarValue">Type of a scalar value used across expressions.</typeparam>
+            <typeparam name="TNode">Type of a node used in the AST.</typeparam>
+            <typeparam name="TContext">A context of the parsing. It's passed to every factory method and can contain global info that doesn't belong individual nodes.</typeparam>
+        </member>
+        <member name="F:ClosedXML.Parser.FormulaParser`3._a1Mode">
+            <summary>
+            Is parser in A1 mode (true) or R1C1 mode (false)?
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.FormulaParser`3.CellFormulaA1(System.String,`2,ClosedXML.Parser.IAstFactory{`0,`1,`2})">
+            <summary>
+            Parse a formula using A1 semantic for references. 
+            </summary>
+            <param name="formula">Formula text that will be parsed.</param>
+            <param name="context">Context that is going to be passed to every method of the <paramref name="factory"/>.</param>
+            <param name="factory">Factory to create nodes of AST tree.</param>
+            <exception cref="T:ClosedXML.Parser.ParsingException">If the formula doesn't satisfy the grammar.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.FormulaParser`3.CellFormulaR1C1(System.String,`2,ClosedXML.Parser.IAstFactory{`0,`1,`2})">
+            <summary>
+            Parse a formula using R1C1 semantic for references. 
+            </summary>
+            <param name="formula">Formula text that will be parsed.</param>
+            <param name="context">Context that is going to be passed to every method of the <paramref name="factory"/>.</param>
+            <param name="factory">Factory to create nodes of AST tree.</param>
+            <exception cref="T:ClosedXML.Parser.ParsingException">If the formula doesn't satisfy the grammar.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.FormulaParser`3.PrefixAtomExpression(System.Boolean,System.Boolean@)">
+            <summary>
+            Parser for two rules unified into a single method.
+            <para>
+            <c>
+            prefix_atom_expression
+                : (PLUS | MINUS) prefix_atom_expression
+                | atom_expression
+                ;
+            </c>
+            
+            <c>
+            arg_prefix_atom_expression
+                : (PLUS | MINUS) arg_prefix_atom_expression
+                | arg_atom_expression
+                ;     
+            </c>
+            </para>
+            </summary>
+            <param name="skipRangeUnion">Does the method represent <c>prefix_atom_expression</c> (<c>false</c>) or <c>arg_prefix_atom_expression</c> (<c>true</c>)</param>
+            <param name="isPureRef">Is the expression of the node a reference expression?</param>
+            <returns></returns>
+        </member>
+        <member name="M:ClosedXML.Parser.FormulaParser`3.RefImplicitExpression(System.Boolean,`1)">
+            <summary>
+            <code>
+            ref_implicit_expression
+                   : INTERSECT ref_implicit_expression
+                   | ref_intersection_expression
+                   ;
+            </code>
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.FormulaParser`3.RefSpillExpression(System.Boolean,`1)">
+            <summary>
+            Parser of the following node.
+            <c>
+            ref_spill_expression
+                : ref_atom_expression SPILL?
+                ;
+            </c>
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.FormulaParser`3.A1Reference">
+            <summary>
+            <code>
+            a1_reference
+                : A1_CELL
+                | A1_CELL COLON A1_CELL
+                | A1_SPAN_REFERENCE
+                ;
+            </code>
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.IAstFactory`3">
+            <summary>
+            A factory used to create an AST through <see cref="T:ClosedXML.Parser.FormulaParser`3"/>.
+            </summary>
+            <remarks>
+            Sheet names are in most cases strings, while most other texts are <c>ReadOnlySpan&lt;char&gt;</c>.
+            The reason is that sheet name is always used as-is and in some methods is null, while
+            other parameters might be processed. E.g. errors are likely to be transformed to enum, function name
+            might need conversion from text <c>IFS</c> to <c>_xlfn.IFS</c> and so on.
+            </remarks>
+            <typeparam name="TScalarValue">Type of a scalar value used across expressions.</typeparam>
+            <typeparam name="TNode">Type of a node used in the AST.</typeparam>
+            <typeparam name="TContext">A context of the parsing. It's passed to every factory method and can contain global info that doesn't belong individual nodes.</typeparam>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.LogicalValue(`2,ClosedXML.Parser.SymbolRange,System.Boolean)">
+            <summary>
+            Create a logical value for an array item.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Symbol range of the logical token in the formula.</param>
+            <param name="value">The logical value of an array.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.NumberValue(`2,ClosedXML.Parser.SymbolRange,System.Double)">
+            <summary>
+            Create a numerical value for an array item.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Symbol range of the number token in the formula.</param>
+            <param name="value">The numeric value of an array. Never <c>NaN</c> or <c>Infinity</c>.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.TextValue(`2,ClosedXML.Parser.SymbolRange,System.String)">
+            <summary>
+            Create a text value for an array item.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Symbol range of the text token in the formula.</param>
+            <param name="text">The text. The characters of text are already unescaped.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.ErrorValue(`2,ClosedXML.Parser.SymbolRange,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Create an error for an array item.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Symbol range of the error token in the formula.</param>
+            <param name="error">The error text, string with <c>#</c> until the end of an error. No whitespace, converted to upper case, no matter the input.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.ArrayNode(`2,ClosedXML.Parser.SymbolRange,System.Int32,System.Int32,System.Collections.Generic.IReadOnlyList{`0})">
+            <summary>
+            Create an array for scalar values.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Symbol range of the array symbol in the formula.</param>
+            <param name="rows">Number of rows of an array. At least 1.</param>
+            <param name="columns">Number of column of an array. At least 1.</param>
+            <param name="elements">Elements of an array, row by row. The number of elements is <paramref name="rows"/>*<paramref name="columns"/>.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.BlankNode(`2,ClosedXML.Parser.SymbolRange)">
+            <summary>
+            Create a blank node. In most cases, a blank argument of a function, e.g. <c>IF(TRUE,,)</c>.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the blank.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.LogicalNode(`2,ClosedXML.Parser.SymbolRange,System.Boolean)">
+            <summary>
+            Create a node with a logical value.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the logical.</param>
+            <param name="value">The logical value that will be represented by the node.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.ErrorNode(`2,ClosedXML.Parser.SymbolRange,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Create a node with an error value.
+            </summary>
+            <remarks>
+            Sheet related ref errors (e.g. <c>Sheet!REF!</c> or <c>#REF!$A$4</c>) are also use this node. In that case,
+            the <paramref name="range"/> contains whole section used to create the error, but <paramref name="error"/>
+            contains normalized <c>#REF!</c> error.
+            </remarks>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the error.</param>
+            <param name="error">The error text, string with <c>#</c> until the end of an error. No whitespace. In upper case format.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.NumberNode(`2,ClosedXML.Parser.SymbolRange,System.Double)">
+            <summary>
+            Create a node with an error value.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the number.</param>
+            <param name="value">The numeric value of an array. Never <c>NaN</c> or <c>Infinity</c>.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.TextNode(`2,ClosedXML.Parser.SymbolRange,System.String)">
+            <summary>
+            Create a node with a text value.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the text.</param>
+            <param name="text">The text. The characters of text are already unescaped.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.Reference(`2,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.ReferenceArea)">
+            <summary>
+            Create a node for a reference to cells without a worksheet.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the reference.</param>
+            <param name="reference">The referenced area.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.SheetReference(`2,ClosedXML.Parser.SymbolRange,System.String,ClosedXML.Parser.ReferenceArea)">
+            <summary>
+            Create a node for a reference in a specific sheet.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the sheet reference.</param>
+            <param name="sheet">Name of a sheet (unescaped) of the <paramref name="reference"/>.</param>
+            <param name="reference">Area in the sheet.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.Reference3D(`2,ClosedXML.Parser.SymbolRange,System.String,System.String,ClosedXML.Parser.ReferenceArea)">
+            <summary>
+            Create a node for a 3D reference.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the 3D reference.</param>
+            <param name="firstSheet">First sheet of 3D reference.</param>
+            <param name="lastSheet">Last sheet of 3D reference.</param>
+            <param name="reference">Area in all sheets of 3D reference.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.ExternalSheetReference(`2,ClosedXML.Parser.SymbolRange,System.Int32,System.String,ClosedXML.Parser.ReferenceArea)">
+            <summary>
+            Create a node for a reference to cells of a specific sheet in a different worksheet.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the external sheet reference.</param>
+            <param name="workbookIndex">Id of an external workbook. The actual path to the file is in workbook part, <c>externalReferences</c> tag.</param>
+            <param name="sheet">Name of a sheet (unescaped) of the <paramref name="reference"/>.</param>
+            <param name="reference">Area the external sheet.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.ExternalReference3D(`2,ClosedXML.Parser.SymbolRange,System.Int32,System.String,System.String,ClosedXML.Parser.ReferenceArea)">
+            <summary>
+            Create a node for a 3D reference in a different workbook.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the external 3D reference.</param>
+            <param name="workbookIndex">Id of an external workbook. The actual path to the file is in workbook part, <c>externalReferences</c> tag.</param>
+            <param name="firstSheet">First sheet of 3D reference.</param>
+            <param name="lastSheet">Last sheet of 3D reference.</param>
+            <param name="reference">Area in all sheets of 3D reference.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.Function(`2,ClosedXML.Parser.SymbolRange,System.ReadOnlySpan{System.Char},System.Collections.Generic.IReadOnlyList{`1})">
+            <summary>
+            Create a node for a function.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the function including arguments.</param>
+            <param name="functionName">Name of a function.</param>
+            <param name="arguments">Nodes of argument values.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.Function(`2,ClosedXML.Parser.SymbolRange,System.String,System.ReadOnlySpan{System.Char},System.Collections.Generic.IReadOnlyList{`1})">
+            <summary>
+            Create a node for a function on a sheet. Might happen for VBA.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range"></param>
+            <param name="sheetName">Name of a sheet.</param>
+            <param name="functionName">Name of a function.</param>
+            <param name="args">Nodes of argument values.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.ExternalFunction(`2,ClosedXML.Parser.SymbolRange,System.Int32,System.String,System.ReadOnlySpan{System.Char},System.Collections.Generic.IReadOnlyList{`1})">
+            <summary>
+            Create a node for a sheet-scoped function from an external workbook.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range"></param>
+            <param name="workbookIndex">Id of an external workbook. The actual path to the file is in workbook part, <c>externalReferences</c> tag.</param>
+            <param name="sheetName">Name of a sheet in external workbook.</param>
+            <param name="functionName">Name of the function.</param>
+            <param name="arguments">Nodes of argument values.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.ExternalFunction(`2,ClosedXML.Parser.SymbolRange,System.Int32,System.ReadOnlySpan{System.Char},System.Collections.Generic.IReadOnlyList{`1})">
+            <summary>
+            Create a node for a function from an external workbook.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the function including arguments.</param>
+            <param name="workbookIndex">Id of an external workbook. The actual path to the file is in workbook part, <c>externalReferences</c> tag.</param>
+            <param name="functionName">Name of the function.</param>
+            <param name="arguments">Nodes of argument values.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.CellFunction(`2,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.RowCol,System.Collections.Generic.IReadOnlyList{`1})">
+            <summary>
+            Create a cell function. It references another function that should likely contain a LAMBDA value.
+            </summary>
+            <remarks>Cell functions are not yet supported by Excel, but are part of a grammar.</remarks>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the cell function.</param>
+            <param name="cell">A reference to a cell with a LAMBDA. Is a single cell.</param>
+            <param name="arguments">Arguments to pass to a LAMBDA.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.StructureReference(`2,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.StructuredReferenceArea,System.String,System.String)">
+            <summary>
+            Create a node to represent a structure reference without a table to a range of columns.
+            Such reference is only allowed in the table (e.g. total formulas).
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the structure reference.</param>
+            <param name="area">A portion of a table that should be considered.</param>
+            <param name="firstColumn">The first column of a range. Null, if whole table. If only one column, same as <paramref name="lastColumn"/>.</param>
+            <param name="lastColumn">The last column of a range. Null, if whole table.If only one column, same as <paramref name="firstColumn"/>.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.StructureReference(`2,ClosedXML.Parser.SymbolRange,System.String,ClosedXML.Parser.StructuredReferenceArea,System.String,System.String)">
+            <summary>
+            Create a node to represent a structure reference to a table.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the structure reference.</param>
+            <param name="table">A name of a table.</param>
+            <param name="area">A portion of a table that should be considered.</param>
+            <param name="firstColumn">The first column of a range. Null, if whole table. If only one column, same as <paramref name="lastColumn"/>.</param>
+            <param name="lastColumn">The last column of a range. Null, if whole table.If only one column, same as <paramref name="firstColumn"/>.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.ExternalStructureReference(`2,ClosedXML.Parser.SymbolRange,System.Int32,System.String,ClosedXML.Parser.StructuredReferenceArea,System.String,System.String)">
+            <summary>
+            Create a node to represent a structure reference to a table in some other workbook.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the structure reference.</param>
+            <param name="workbookIndex">Id of external workbook.</param>
+            <param name="table">A name of a table.</param>
+            <param name="area">A portion of a table that should be considered.</param>
+            <param name="firstColumn">The first column of a range. Null, if whole table. If only one column, same as <paramref name="lastColumn"/>.</param>
+            <param name="lastColumn">The last column of a range. Null, if whole table.If only one column, same as <paramref name="firstColumn"/>.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.Name(`2,ClosedXML.Parser.SymbolRange,System.String)">
+            <summary>
+            Create a node that should evaluate to a value of a name defined in a workbook.
+            </summary>
+            <remarks>
+            Name can be any formula, though in most cases, it is a cell reference. Also note that
+            names can be global (usable in a whole workbook) or local (only for one worksheet).
+            </remarks>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the name.</param>
+            <param name="name">The defined name.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.SheetName(`2,ClosedXML.Parser.SymbolRange,System.String,System.String)">
+            <summary>
+            Create a node that should evaluate to a value of a name defined in a worksheet.
+            </summary>
+            <remarks>
+            Name can be any formula, though in most cases, it is a cell reference. Also note that
+            names can be global (usable in a whole workbook) or local (only for one worksheet).
+            </remarks>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the name.</param>
+            <param name="sheet">Name of a sheet, unescaped.</param>
+            <param name="name">The defined name.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.ExternalName(`2,ClosedXML.Parser.SymbolRange,System.Int32,System.String)">
+            <summary>
+            Create a node that should evaluate to a value of a defined name in a different workbook.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range"></param>
+            <param name="workbookIndex">Id of an external workbook. The actual path to the file is in workbook part, <c>externalReferences</c> tag.</param>
+            <param name="name">Name from a workbook. It can be defined name or a name of a table.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.ExternalSheetName(`2,ClosedXML.Parser.SymbolRange,System.Int32,System.String,System.String)">
+            <summary>
+            Create a node that should evaluate to a value of a defined name in a worksheet of a different workbook.
+            </summary>
+            <remarks>
+            Name can be any formula, though in most cases, it is a cell reference. Also note that
+            names can be global (usable in a whole workbook) or local (only for one worksheet).
+            </remarks>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the name.</param>
+            <param name="workbookIndex">Id of an external workbook. The actual path to the file is in workbook part, <c>externalReferences</c> tag.</param>
+            <param name="sheet">Name of a sheet in the external workbook, unescaped.</param>
+            <param name="name">The defined name.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.BinaryNode(`2,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.BinaryOperation,`1,`1)">
+            <summary>
+            Create a node that performs a binary operation on values from another nodes.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range">Range in a formula that contains the binary operation.</param>
+            <param name="operation">Binary operation.</param>
+            <param name="leftNode">Node that should be evaluated for left argument of a binary operation.</param>
+            <param name="rightNode">Node that should be evaluated for right argument of a binary operation.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.Unary(`2,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.UnaryOperation,`1)">
+            <summary>
+            Create a node that performs an unary operation on a value from another node.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range"></param>
+            <param name="operation">Unary operation.</param>
+            <param name="node">Node that should be evaluated for a value.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.IAstFactory`3.Nested(`2,ClosedXML.Parser.SymbolRange,`1)">
+            <summary>
+            This factory method is called for nested expression in braces (<c>(1+2)/4</c>). The problem isn't that
+            it would be evaluated incorrectly, but it is to preserve braces during A1 to R1C1 transformation.
+            </summary>
+            <param name="context">User supplied context for parsing a tree that is an argument of a parsing method.</param>
+            <param name="range"></param>
+            <param name="node">The node representing expression in braces.</param>
+            <remarks>Simplest implementation returns the same node and avoids extra nodes.</remarks>
+        </member>
+        <member name="T:ClosedXML.Parser.ModContext">
+            <summary>
+            A context for modifications of a formula through <see cref="T:ClosedXML.Parser.CopyVisitor"/>.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.ModContext.#ctor(System.String,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Create a context for modifying formulas. 
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.ModContext.Formula">
+            <summary>
+            The original formula without any modifications.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.ModContext.Row">
+            <summary>
+            Absolute row number in a sheet.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.ModContext.Col">
+            <summary>
+            Absolute column number in a sheet.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.ModContext.IsA1">
+            <summary>
+            Should references in formula be A1?
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.NameUtils">
+            <summary>
+            A class for checking whether an identifier in a formula requires quotes or
+            can can be used without quotes. This is an Excel custom behavior, unrelated
+            to the unicode standard. The grammar defines a behavior, but that is not
+            how Excel behaves. Microsoft likely made a selection based on each
+            individual language without any connection to Unicode codepoint categories
+            (e.g. it likely marked quote-like symbols from each language as requiring
+            quotes). Data used in the methods were collected directly from Excel using
+            AutoHotKey script.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.NameUtils.QuoteFirst">
+            <summary>
+            A bitmask indicating if the sheet name with first codepoint should be quoted.
+            Generated by `Generate_sheet_quotation_data`. BitArray is fast and takes up only
+            few KiB.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.NameUtils.QuoteNext">
+            <summary>
+            A bitmask indicating if the sheet name with next such codepoint should be quoted.
+            Generated by `Generate_sheet_quotation_data`. BitArray is fast and takes up only
+            few KiB.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.NameUtils.InvalidSheetChars">
+            <summary>
+            Character not allowed in a sheet name, even quoted one.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.NameUtils.ShouldQuote(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Should the name be quoted?
+            </summary>
+            <remarks>
+            Sheet names can't contain <c>*</c>,<c>/</c>,<c>:</c>,<c>?</c>,<c>[</c>,<c>\</c>,
+            <c>]</c>, but method doesn't check for that. Also, it can't start with <c>'</c>,
+            though it can be non-first character.
+            </remarks>
+            <param name="name">The name. Must be at least 1 char long.</param>
+            <returns>True, if the sheet name should be quoted in formula.</returns>
+            <exception cref="T:System.ArgumentException">If name is empty.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.NameUtils.IsSheetNameValid(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Is the name of a sheet valid?
+            </summary>
+            <param name="sheetName">Name of the sheet.</param>
+        </member>
+        <member name="T:ClosedXML.Parser.ParsingException">
+            <summary>
+            Indicates an error during parsing. In most cases, unexpected token.
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.ReferenceArea">
+            <summary>
+            Due to frequency of an area in formulas, the grammar has a token that represents
+            an area in a sheet. This is the DTO from parser to engine. Two corners make an area
+            for A1 notation, but not for R1C1 (has several edge cases).
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.ReferenceArea.First">
+            <summary>
+            First reference. First in terms of position in formula, not position
+            in sheet.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.ReferenceArea.Second">
+            <summary>
+            Second reference. Second in terms of position in formula, not position
+            in sheet. If area was specified using only one cell, the value is
+            same as <see cref="P:ClosedXML.Parser.ReferenceArea.First"/>.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.ReferenceArea.Style">
+            <summary>
+            Semantic style of reference.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.ReferenceArea.#ctor(ClosedXML.Parser.RowCol,ClosedXML.Parser.RowCol)">
+            <summary>
+            Create a reference symbol using the two <see cref="T:ClosedXML.Parser.RowCol"/> (e.g.
+            <c>A1:B2</c>) or two columns (e.g. <c>A:D</c>) or two rows (e.g.
+            <c>7:8</c>).
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.ReferenceArea.#ctor(ClosedXML.Parser.RowCol)">
+            <summary>
+            Create an area for a single reference.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.ReferenceArea.#ctor(ClosedXML.Parser.ReferenceAxisType,System.Int32,ClosedXML.Parser.ReferenceAxisType,System.Int32,ClosedXML.Parser.ReferenceStyle)">
+            <summary>
+            Create a new area from a single <see cref="T:ClosedXML.Parser.RowCol"/>.
+            </summary>
+            <param name="rowType">Row axis type of a reference.</param>
+            <param name="rowPosition">Row position.</param>
+            <param name="columnType">Column axis type of a reference.</param>
+            <param name="columnPosition">Column position.</param>
+            <param name="style">Semantic of the reference.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.ReferenceArea.#ctor(System.Int32,System.Int32,ClosedXML.Parser.ReferenceStyle)">
+            <summary>
+            Create a new area from a single row/column intersection.
+            </summary>
+            <param name="rowPosition"><see cref="F:ClosedXML.Parser.ReferenceAxisType.Relative"/> row.</param>
+            <param name="columnPosition"><see cref="F:ClosedXML.Parser.ReferenceAxisType.Relative"/> column.</param>
+            <param name="style">Semantic of the reference.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.ReferenceArea.GetDisplayStringA1">
+            <summary>
+            Render area in A1 notation. The content must be a valid content
+            from A1 token. If both references are same, only one is converted
+            to display string.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.ReferenceArea.GetDisplayStringR1C1">
+            <summary>
+            Render area in R1C1 notation. The content must be a valid content
+            from R1C1 token. If both references are same, only one is converted
+            to display string.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.ReferenceArea.ToR1C1(System.Int32,System.Int32)">
+            <summary>
+            Convert A1 reference to R1C1.
+            </summary>
+            <remarks>Assumes reference is in A1.</remarks>
+        </member>
+        <member name="M:ClosedXML.Parser.ReferenceArea.ToA1OrError(System.Int32,System.Int32)">
+            <summary>
+            Convert R1C1 reference to A1.
+            </summary>
+            <remarks>Assumes reference is in R1C1.</remarks>
+        </member>
+        <member name="M:ClosedXML.Parser.ReferenceArea.AppendA1(System.Text.StringBuilder)">
+            <summary>
+            Get reference in A1 notation.
+            </summary>
+            <remarks>Assumes reference is in A1.</remarks>
+        </member>
+        <member name="M:ClosedXML.Parser.ReferenceArea.AppendR1C1(System.Text.StringBuilder)">
+            <summary>
+            Get reference in R1C1 notation.
+            </summary>
+            <remarks>Assumes reference is in R1C1.</remarks>
+        </member>
+        <member name="T:ClosedXML.Parser.ReferenceAxisType">
+            <summary>
+            The type of content stored in a row or column number of a reference.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.ReferenceAxisType.Relative">
+            <summary>
+            Axis is relative. E.g. <c>A5</c> for A1, <c>R[-3]</c> for R1C1.
+            </summary>
+            <remarks>Keep 0, so default <c>RowCol</c> is <em>A1</em>.</remarks>
+        </member>
+        <member name="F:ClosedXML.Parser.ReferenceAxisType.Absolute">
+            <summary>
+            Units are absolute. E.g. <c>$A$5</c> for A1, <c>R8C5</c> for R1C1.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.ReferenceAxisType.None">
+            <summary>
+            <para>
+            The reference axis (row or column) is not specified for reference.
+            Generally, it means whole axis is used. If the type is <see cref="F:ClosedXML.Parser.ReferenceAxisType.None"/>,
+            the value is ignored, but should be 0.
+            </para>
+            <para>
+            Examples:
+            <list type="bullet">
+              <item><c>A:B</c> in A1 doesn't specify row.</item>
+              <item><c>R2</c> in R1C1 doesn't specify column.</item>
+            </list>
+            </para>
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.ReferenceStyle">
+            <summary>
+            Style of referencing areas in a worksheet.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.ReferenceStyle.A1">
+            <summary>
+            The reference (<see cref="T:ClosedXML.Parser.ReferenceArea"/> or <see cref="T:ClosedXML.Parser.RowCol"/>)
+            uses <em>A1</em> semantic. Even relative references start from
+            <c>[1,1]</c>, but relative references move when cells move.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.ReferenceStyle.R1C1">
+            <summary>
+            The reference (<see cref="T:ClosedXML.Parser.ReferenceArea"/> or <see cref="T:ClosedXML.Parser.RowCol"/>)
+            uses <em>R1C1</em> semantic. Relative references are relative to
+            the cell that contains the reference, not <c>[1,1]</c>.
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.RefModVisitor">
+            <summary>
+            It's designed to allow modifications of references, e.g. renaming, moving references
+            and so on. Just inherit it and override one of <c>virtual Modify*</c> methods.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.LogicalValue(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.NumberValue(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.TextValue(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ErrorValue(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.ReadOnlySpan{System.Char})">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ArrayNode(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Int32,System.Int32,System.Collections.Generic.IReadOnlyList{ClosedXML.Parser.TransformedSymbol})">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.BlankNode(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.LogicalNode(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ErrorNode(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.ReadOnlySpan{System.Char})">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.NumberNode(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.TextNode(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.Reference(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.ReferenceArea)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.SheetReference(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.String,ClosedXML.Parser.ReferenceArea)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.Reference3D(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.String,System.String,ClosedXML.Parser.ReferenceArea)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ExternalSheetReference(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Int32,System.String,ClosedXML.Parser.ReferenceArea)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ExternalReference3D(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Int32,System.String,System.String,ClosedXML.Parser.ReferenceArea)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.Function(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.ReadOnlySpan{System.Char},System.Collections.Generic.IReadOnlyList{ClosedXML.Parser.TransformedSymbol})">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.Function(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.String,System.ReadOnlySpan{System.Char},System.Collections.Generic.IReadOnlyList{ClosedXML.Parser.TransformedSymbol})">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ExternalFunction(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Int32,System.String,System.ReadOnlySpan{System.Char},System.Collections.Generic.IReadOnlyList{ClosedXML.Parser.TransformedSymbol})">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ExternalFunction(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Int32,System.ReadOnlySpan{System.Char},System.Collections.Generic.IReadOnlyList{ClosedXML.Parser.TransformedSymbol})">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.CellFunction(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.RowCol,System.Collections.Generic.IReadOnlyList{ClosedXML.Parser.TransformedSymbol})">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.StructureReference(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.StructuredReferenceArea,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.StructureReference(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.String,ClosedXML.Parser.StructuredReferenceArea,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ExternalStructureReference(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Int32,System.String,ClosedXML.Parser.StructuredReferenceArea,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.Name(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.SheetName(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ExternalName(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Int32,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ExternalSheetName(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,System.Int32,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.BinaryNode(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.BinaryOperation,ClosedXML.Parser.TransformedSymbol,ClosedXML.Parser.TransformedSymbol)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.Unary(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.UnaryOperation,ClosedXML.Parser.TransformedSymbol)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.Nested(ClosedXML.Parser.ModContext,ClosedXML.Parser.SymbolRange,ClosedXML.Parser.TransformedSymbol)">
+            <inheritdoc />
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ModifySheet(ClosedXML.Parser.ModContext,System.String)">
+            <summary>
+            An extension to modify sheet name, e.g. rename.
+            </summary>
+            <param name="ctx">The transformation context.</param>
+            <param name="sheetName">Original sheet name.</param>
+            <returns>New sheet name. If null, it indicates sheet has been deleted and should be replaced with <c>#REF!</c></returns>
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ModifyTable(ClosedXML.Parser.ModContext,System.String)">
+            <summary>
+            Modify reference to a cell.
+            </summary>
+            <param name="ctx">The origin of formula.</param>
+            <param name="table">Original name of a table.</param>
+            <returns>Modified name of a table or null if <c>#REF!</c>.</returns>
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ModifyFunction(ClosedXML.Parser.ModContext,System.ReadOnlySpan{System.Char})">
+            <summary>
+            An extension to modify name of a function.
+            </summary>
+            <param name="ctx">The transformation context.</param>
+            <param name="functionName">Original name of function.</param>
+            <returns>New name of a function.</returns>
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ModifyRef(ClosedXML.Parser.ModContext,ClosedXML.Parser.ReferenceArea)">
+            <summary>
+            Modify reference to a cell. This method is called for every place where is a ref and is
+            mostly intended to change reference style.
+            </summary>
+            <param name="ctx">The origin of formula.</param>
+            <param name="reference">Area reference.</param>
+            <returns>Modified reference or null if <c>#REF!</c>.</returns>
+        </member>
+        <member name="M:ClosedXML.Parser.RefModVisitor.ModifyCellFunction(ClosedXML.Parser.ModContext,ClosedXML.Parser.RowCol)">
+            <summary>
+            Modify reference to a cell function.
+            </summary>
+            <param name="ctx">The transformation context.</param>
+            <param name="cell">Original cell containing function.</param>
+            <returns>Modified reference or null if <c>#REF!</c>.</returns>
+        </member>
+        <member name="M:ClosedXML.Parser.Rolex.RolexLexer.GetTokensA1(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Get all tokens for a formula. Use A1 semantic. If there is an error, add token with an error symbol at the end or EOF token at the end.
+            </summary>
+            <param name="formula">Formula to parse.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.Rolex.RolexLexer.GetTokensR1C1(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Get all tokens for a formula. Use R1C1 semantic. If there is an error, add token with an error symbol at the end or EOF token at the end.
+            </summary>
+            <param name="formula">Formula to parse.</param>
+        </member>
+        <member name="T:ClosedXML.Parser.Rolex.TableTokenizer">
+            <summary>
+            A class required by a Rolex tool. Never used.
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.RowCol">
+            <summary>
+            <para>
+            One endpoint of a reference defined by row and column axis. It can be
+            <list type="bullet">
+              <item>
+              A single cell that is an intersection of row and a column
+              </item>
+              <item>
+              An entire row, e.g. <c><em>A</em>:B</c> or <c><em>R5</em>:R10</c>.
+              </item>
+              <item>
+              An entire column, e.g. <c><em>7</em>:14</c> or <c><em>C7</em>:C10</c>.
+              </item>
+            </list>
+            The content of values and thus their interpretation depends on the
+            <see cref="T:ClosedXML.Parser.ReferenceArea"/> reference style, e.g. column 14 with
+            <see cref="F:ClosedXML.Parser.ReferenceAxisType.Relative"/> can indicate <c>R[14]</c> or <c>X14</c> for A1
+            style.
+            </para>
+            <para>
+            Not all combinations are valid and the content of the reference corresponds
+            to a valid token in expected reference style (e.g. in R1C1, <c>R</c> is
+            a valid standalone reference, but there is no such possibility for A1).
+            </para>
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.RowCol.ColumnType">
+            <summary>
+            How to interpret the <see cref="P:ClosedXML.Parser.RowCol.ColumnValue"/> value.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.RowCol.ColumnValue">
+            <summary>
+            Position of a column.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.RowCol.RowType">
+            <summary>
+            How to interpret the <see cref="P:ClosedXML.Parser.RowCol.RowValue"/> value.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.RowCol.RowValue">
+            <summary>
+            Position of a row.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.RowCol.IsA1">
+            <summary>
+            Does <c>RowCol</c> use <em>A1</em> semantic?
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.RowCol.IsR1C1">
+            <summary>
+            Does <c>RowCol</c> use <em>R1C1</em> semantic?
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.RowCol.Style">
+            <summary>
+            Reference style of the <c>RowCol</c>.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.RowCol.IsRow">
+            <summary>
+            Is RowCol a part (start or end) of row span?
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.RowCol.IsColumn">
+            <summary>
+            Is RowCol a part (start or end) of column span?
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.#ctor(ClosedXML.Parser.ReferenceAxisType,System.Int32,ClosedXML.Parser.ReferenceAxisType,System.Int32,ClosedXML.Parser.ReferenceStyle)">
+            <summary>
+            Create a new <see cref="T:ClosedXML.Parser.RowCol"/> with both row and columns specified.
+            </summary>
+            <param name="rowType">The type used to interpret the row position.</param>
+            <param name="rowValue">The value for the row position.</param>
+            <param name="columnType">The type used to interpret the column position.</param>
+            <param name="columnValue">The value for the column position.</param>
+            <param name="style">Semantic of the reference.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.#ctor(System.Boolean,System.Int32,System.Boolean,System.Int32,ClosedXML.Parser.ReferenceStyle)">
+            <summary>
+            Create a new <see cref="T:ClosedXML.Parser.RowCol"/> with both row and columns specified.
+            </summary>
+            <param name="rowAbs">Is the row reference absolute? If false, then relative.</param>
+            <param name="rowValue">The value for the row position.</param>
+            <param name="colAbs">Is the column reference absolute? If false, then relative.</param>
+            <param name="columnValue">The value for the column position.</param>
+            <param name="style">Semantic of the reference.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.#ctor(System.Int32,System.Int32,ClosedXML.Parser.ReferenceStyle)">
+            <summary>
+            Create a new <see cref="T:ClosedXML.Parser.RowCol"/> with both row and columns specified
+            with relative values. Used mostly for A1 style.
+            </summary>
+            <param name="row">The relative position of the row.</param>
+            <param name="column">The relative position of the column.</param>
+            <param name="style">Semantic of the reference.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.op_Equality(ClosedXML.Parser.RowCol,ClosedXML.Parser.RowCol)">
+            <summary>
+            Compares two <see cref="T:ClosedXML.Parser.RowCol"/> objects by value. The result specifies whether
+            all properties of the two <see cref="T:ClosedXML.Parser.RowCol"/> objects are equal.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.op_Inequality(ClosedXML.Parser.RowCol,ClosedXML.Parser.RowCol)">
+            <summary>
+            Compares two <see cref="T:ClosedXML.Parser.RowCol"/> objects by value. The result specifies whether
+            any property of the two <see cref="T:ClosedXML.Parser.RowCol"/> objects is not equal.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.GetDisplayStringA1">
+            <summary>
+            Get a reference in <em>A1</em> notation.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">When <c>RowCol</c> doesn't use <em>A1</em> semantic.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.GetDisplayStringR1C1">
+            <summary>
+            Get a reference in <em>R1C1</em> notation.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">When <c>RowCol</c> doesn't use <em>R1C1</em> semantic.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.ToR1C1(System.Int32,System.Int32)">
+            <summary>
+            Convert <c>RowCol</c> to <em>R1C1</em>.
+            </summary>
+            <remarks>If <c>RowCol</c> already is in <em>R1C1</em>, return it directly.</remarks>
+            <param name="anchorRow">A row coordinate that should be used as an anchor for relative R1C1 reference.</param>
+            <param name="anchorCol">A column coordinate that should be used as an anchor for relative R1C1 reference.</param>
+            <returns>RowCol with R1C1 semantic.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Row or col is out of valid row or column number.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.ToA1(System.Int32,System.Int32)">
+            <summary>
+            Convert <c>RowCol</c> to <em>A1</em>.
+            </summary>
+            <remarks>
+            If <c>RowCol</c> already is in <em>A1</em>, return it directly. If converted <c>RowCol</c>
+            is out of sheet bounds, loop it.
+            </remarks>
+            <param name="anchorRow">A row coordinate that should be used as an anchor for relative <em>R1C1</em> reference.</param>
+            <param name="anchorCol">A column coordinate that should be used as an anchor for relative <em>R1C1</em> reference.</param>
+            <returns>RowCol with R1C1 semantic.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Row or col is out of valid row or column number.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.AppendA1(System.Text.StringBuilder)">
+            <inheritdoc cref="M:ClosedXML.Parser.RowCol.GetDisplayStringA1"/>
+            <param name="sb">String buffer where to write the output.</param>
+            <exception cref="T:System.InvalidOperationException">When <c>RowCol</c> is not in <em>A1</em> notation.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.AppendR1C1(System.Text.StringBuilder)">
+            <inheritdoc cref="M:ClosedXML.Parser.RowCol.GetDisplayStringR1C1"/>
+            <param name="sb">String buffer where to write the output.</param>
+            <exception cref="T:System.InvalidOperationException">When <c>RowCol</c> is not in <em>A1</em> notation.</exception>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.Equals(System.Object)">
+            <summary>
+            Check whether the <paramref name="obj"/> is of type <see cref="T:ClosedXML.Parser.RowCol"/>
+            and all values are same as this one.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.Equals(ClosedXML.Parser.RowCol)">
+            <summary>
+            Check whether the all values of <paramref name="other"/> are same as
+            this one.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.RowCol.GetHashCode">
+            <summary>
+            Returns a hash code for this <see cref="T:ClosedXML.Parser.RowCol"/>.
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.StringBuilderExtensions">
+            <summary>
+            Extension methods for building formulas.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.StringBuilderExtensions.Append(System.Text.StringBuilder,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Compatibility method for NETStandard 2.0, which doesn't have methods with <c>Span</c> arguments.
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.StructuredReferenceArea">
+            <summary>
+            Structure reference is basically a set of cells in an area of an intersection between a range of columns
+            in a table and a vertical range. This enum represents possible values. Thanks to the pattern of a structure
+            reference token, the vertical range of a formula is always continuous (i.e. no <c>Headers</c> and <c>Totals</c>
+            together).
+            </summary>
+            <remarks>
+            The documentation calls it *Item specifier* and grammar *keywords*. Both rather unintuitive names, so *area*
+            is used instead.
+            </remarks>
+        </member>
+        <member name="F:ClosedXML.Parser.StructuredReferenceArea.None">
+            <summary>
+            Nothing was specified in the structure reference. Should have same impact as <see cref="F:ClosedXML.Parser.StructuredReferenceArea.Data"/>.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.StructuredReferenceArea.Data">
+            <summary>
+            <c>[#Data]</c> - only data cells of a table, without headers or totals.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.StructuredReferenceArea.Headers">
+            <summary>
+            <c>[#Headers]</c> - only header rows of a table, if it exists. If there isn't header row, <c>#REF!</c>.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.StructuredReferenceArea.Totals">
+            <summary>
+            <c>[#Totals]</c> - only totals rows of a table, if it exists. If there isn't totals row, <c>#REF!</c>.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.StructuredReferenceArea.All">
+            <summary>
+            <c>[#All]</c> - all cells of a table. 
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.StructuredReferenceArea.ThisRow">
+            <summary>
+            <c>[#This Row]</c> - only the same data row as the referencing cell. <c>#VALUE!</c> if not on a data row
+            (e.g. headers or totals) or out of a table.
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.SymbolRange">
+            <summary>
+            A range of a symbol in formula text.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.SymbolRange.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Create a substring of a symbol.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.SymbolRange.Start">
+            <summary>
+            Start index of symbol in formula text.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.SymbolRange.End">
+            <summary>
+            End index of symbol in formula text. Can be outside of text bounds, if symbol ends at the
+            last char of formula.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.SymbolRange.Length">
+            <summary>
+            Length of a symbol.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.SymbolRange.ToString">
+            <summary>
+            Get range indexes.
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.Token">
+            <summary>
+            A token for a formula input.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.Token.ErrorSymbolId">
+            <summary>
+            An error symbol id.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.Token.EofSymbolId">
+            <summary>
+            An symbol id for end of file. Mostly for compatibility with ANTLR.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.Token.SymbolId">
+            <summary>
+            A token ID or TokenType. Non-negative integer. The values are from Antlr grammar, starting with 1.
+            See <c>FormulaLexer.tokens</c>. The value -1 indicates an error and unrecognized token and is always
+            last token.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.Token.StartIndex">
+            <summary>
+            The starting index of a token, in code units (=chars).
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.Token.Length">
+            <summary>
+            Length of a token in code units (=chars). For non-error tokens, must be at least 1. Ignore for error token.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.TokenParser.ParseSingleSheetPrefix(System.ReadOnlySpan{System.Char},System.Nullable{System.Int32}@,System.String@)">
+            <summary>
+            Parse <see cref="F:ClosedXML.Parser.Token.SINGLE_SHEET_PREFIX"/> token.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.TokenParser.ParseSheetRangePrefix(System.ReadOnlySpan{System.Char},System.Nullable{System.Int32}@,System.String@,System.String@)">
+            <summary>
+            Parse token <see cref="F:ClosedXML.Parser.Token.SHEET_RANGE_PREFIX"/>
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.TokenParser.ParseR1C1Reference(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Parse <c>A1_REFERENCE</c> token in R1C1 mode.
+            </summary>
+            <param name="token">The span of a token.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.TokenParser.ReadR1C1Axis(System.ReadOnlySpan{System.Char},System.Int32@)">
+            <summary>
+            Read the axis value. Can work for row or column.
+            </summary>
+            <param name="token">The span of a token.</param>
+            <param name="currentIdx">Index where is <c>C</c>/<c>R</c>.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.TokenParser.ParseA1Reference(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Extract info about cell reference from a <c>A1_REFERENCE</c> token.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.TokenParser.GetStructuredName(System.ReadOnlySpan{System.Char},System.Int32,System.String@)">
+            <summary>
+            Read a structured name until the end bracket or column
+            </summary>
+            <param name="input">Input span.</param>
+            <param name="startIdx">First index of expected name. It will either contain a bracket or first letter of column name.</param>
+            <param name="columnName">Parsed name.</param>
+        </member>
+        <member name="T:ClosedXML.Parser.TransformedSymbol">
+            <summary>
+            A symbol that represents a transformed symbol value. Should be used during AST transformation.
+            </summary>
+        </member>
+        <member name="F:ClosedXML.Parser.TransformedSymbol._transformedText">
+            <summary>
+            The text that replaced symbol or null, if there was no change.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.TransformedSymbol.OriginalRange">
+            <summary>
+            Range of the symbol in original formula.
+            </summary>
+        </member>
+        <member name="P:ClosedXML.Parser.TransformedSymbol.Length">
+            <summary>
+            Length of the transformed symbol.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.TransformedSymbol.ToText(System.String,ClosedXML.Parser.SymbolRange,System.String)">
+            <summary>
+            Create a symbol that is different from what was in the original formula.
+            </summary>
+            <param name="formula">Text of whole formula.</param>
+            <param name="range">Range of the symbol in the formula.</param>
+            <param name="transformedSymbol">The string of a transformed symbol.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.TransformedSymbol.CopyOriginal(System.String,ClosedXML.Parser.SymbolRange)">
+            <summary>
+            Create a new symbol represented by a substring of an original formula. Generally used when
+            there is no modification of the symbol (i.e. just pass it as it is).
+            </summary>
+            <param name="formula">Text of whole formula.</param>
+            <param name="range">Range of the symbol in the formula.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.TransformedSymbol.AsSpan">
+            <summary>
+            Get content of the symbol as a span. Doesn't allocate memory.
+            </summary>
+        </member>
+        <member name="M:ClosedXML.Parser.TransformedSymbol.ToString(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Get symbol as a text with extra text at the end.
+            </summary>
+            <param name="append">Text to append at the end of the symbol text.</param>
+        </member>
+        <member name="M:ClosedXML.Parser.TransformedSymbol.ToString">
+            <summary>
+            Get symbol text representation.
+            </summary>
+        </member>
+        <member name="T:ClosedXML.Parser.UnaryOperation">
+            <summary>
+            Unary operations of a formula.
+            </summary>
+            <remarks>Range operations are always after number operations.</remarks>
+        </member>
+        <member name="F:ClosedXML.Parser.UnaryOperation.Plus">
+            <summary>Prefix plus operation.</summary>
+        </member>
+        <member name="F:ClosedXML.Parser.UnaryOperation.Minus">
+            <summary>Prefix minus operation.</summary>
+        </member>
+        <member name="F:ClosedXML.Parser.UnaryOperation.Percent">
+            <summary>Suffix percent operation.</summary>
+        </member>
+        <member name="F:ClosedXML.Parser.UnaryOperation.ImplicitIntersection">
+            <summary>Prefix range intersection operation.</summary>
+        </member>
+        <member name="F:ClosedXML.Parser.UnaryOperation.SpillRange">
+            <summary>Suffix range spill operation.</summary>
+        </member>
+    </members>
+</doc>

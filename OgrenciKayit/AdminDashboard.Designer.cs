@@ -76,6 +76,12 @@ namespace OgrenciKayit
             this.txtCitySearch = new System.Windows.Forms.TextBox();
             this.btnCitySearch = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
+            this.statusStripMain = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabelStudents = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabelDepartments = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabelSchools = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabelCities = new System.Windows.Forms.ToolStripStatusLabel();
+            this.btnExportExcel = new System.Windows.Forms.Button();
             this.panelTop.SuspendLayout();
             this.panelSidebar.SuspendLayout();
             this.panelSidebarInfo.SuspendLayout();
@@ -302,6 +308,7 @@ namespace OgrenciKayit
             // panelContent
             // 
             this.panelContent.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panelContent.Controls.Add(this.btnExportExcel);
             this.panelContent.Controls.Add(this.panelCities);
             this.panelContent.Controls.Add(this.panelDepartments);
             this.panelContent.Controls.Add(this.panelSchools);
@@ -656,6 +663,51 @@ namespace OgrenciKayit
             this.label4.TabIndex = 1;
             this.label4.Text = "Þehirler";
             // 
+            // statusStripMain
+            // 
+            this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabelStudents,
+            this.toolStripStatusLabelDepartments,
+            this.toolStripStatusLabelSchools,
+            this.toolStripStatusLabelCities});
+            this.statusStripMain.Location = new System.Drawing.Point(0, this.Height - 22);
+            this.statusStripMain.Name = "statusStripMain";
+            this.statusStripMain.Size = new System.Drawing.Size(this.Width, 22);
+            this.statusStripMain.TabIndex = 999;
+            this.statusStripMain.Text = "statusStripMain";
+            // 
+            // toolStripStatusLabelStudents
+            // 
+            this.toolStripStatusLabelStudents.Name = "toolStripStatusLabelStudents";
+            this.toolStripStatusLabelStudents.Size = new System.Drawing.Size(120, 17);
+            this.toolStripStatusLabelStudents.Text = "Öðrenciler: 0 kayýt";
+            // 
+            // toolStripStatusLabelDepartments
+            // 
+            this.toolStripStatusLabelDepartments.Name = "toolStripStatusLabelDepartments";
+            this.toolStripStatusLabelDepartments.Size = new System.Drawing.Size(120, 17);
+            this.toolStripStatusLabelDepartments.Text = "Bölümler: 0 kayýt";
+            // 
+            // toolStripStatusLabelSchools
+            // 
+            this.toolStripStatusLabelSchools.Name = "toolStripStatusLabelSchools";
+            this.toolStripStatusLabelSchools.Size = new System.Drawing.Size(120, 17);
+            this.toolStripStatusLabelSchools.Text = "Okullar: 0 kayýt";
+            // 
+            // toolStripStatusLabelCities
+            // 
+            this.toolStripStatusLabelCities.Name = "toolStripStatusLabelCities";
+            this.toolStripStatusLabelCities.Size = new System.Drawing.Size(120, 17);
+            this.toolStripStatusLabelCities.Text = "Þehirler: 0 kayýt";
+            // 
+            // btnExportExcel
+            // 
+            this.btnExportExcel.Name = "btnExportExcel";
+            this.btnExportExcel.Text = "Excel'e Aktar";
+            this.btnExportExcel.Size = new System.Drawing.Size(120, 32);
+            this.btnExportExcel.Location = new System.Drawing.Point(540, 20);
+            this.btnExportExcel.Click += new System.EventHandler(this.btnExportExcel_Click);
+            // 
             // AdminDashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -666,6 +718,7 @@ namespace OgrenciKayit
             this.Controls.Add(this.panelContent);
             this.Controls.Add(this.panelSidebar);
             this.Controls.Add(this.panelTop);
+            this.Controls.Add(this.statusStripMain);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "AdminDashboard";
             this.Text = "AdminDashboard";
@@ -689,6 +742,7 @@ namespace OgrenciKayit
             this.panelCities.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCities)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
             // After initializing controls, apply modern styles
             FormUtils.StyleButton(this.btnLogout);
@@ -714,6 +768,7 @@ namespace OgrenciKayit
             FormUtils.StyleButton(this.btnStudentAdd);
             FormUtils.StyleButton(this.btnStudentEdit);
             FormUtils.StyleButton(this.btnStudentDelete);
+            FormUtils.StyleButton(this.btnExportExcel);
         }
 
         #endregion
@@ -767,5 +822,11 @@ namespace OgrenciKayit
         private System.Windows.Forms.Button btnStudentEdit;
         private System.Windows.Forms.Button btnStudentDelete;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.StatusStrip statusStripMain;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelStudents;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelDepartments;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelSchools;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelCities;
+        private System.Windows.Forms.Button btnExportExcel;
     }
 }

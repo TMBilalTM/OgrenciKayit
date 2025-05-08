@@ -14,6 +14,8 @@ namespace OgrenciKayit
         [STAThread]
         static void Main()
         {
+            // EPPlus veya başka bir lisans ayarı gerekmez, ClosedXML lisanssız kullanılabilir
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

@@ -1,0 +1,334 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RBush</name>
+    </assembly>
+    <members>
+        <member name="T:RBush.Envelope">
+            <summary>
+            A bounding envelope, used to identify the bounds of of the points within
+            a particular node.
+            </summary>
+            <param name="MinX">The minimum X value of the bounding box.</param>
+            <param name="MinY">The minimum Y value of the bounding box.</param>
+            <param name="MaxX">The maximum X value of the bounding box.</param>
+            <param name="MaxY">The maximum Y value of the bounding box.</param>
+        </member>
+        <member name="M:RBush.Envelope.#ctor(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            A bounding envelope, used to identify the bounds of of the points within
+            a particular node.
+            </summary>
+            <param name="MinX">The minimum X value of the bounding box.</param>
+            <param name="MinY">The minimum Y value of the bounding box.</param>
+            <param name="MaxX">The maximum X value of the bounding box.</param>
+            <param name="MaxY">The maximum Y value of the bounding box.</param>
+        </member>
+        <member name="P:RBush.Envelope.MinX">
+            <summary>The minimum X value of the bounding box.</summary>
+        </member>
+        <member name="P:RBush.Envelope.MinY">
+            <summary>The minimum Y value of the bounding box.</summary>
+        </member>
+        <member name="P:RBush.Envelope.MaxX">
+            <summary>The maximum X value of the bounding box.</summary>
+        </member>
+        <member name="P:RBush.Envelope.MaxY">
+            <summary>The maximum Y value of the bounding box.</summary>
+        </member>
+        <member name="P:RBush.Envelope.Area">
+            <summary>
+            The calculated area of the bounding box.
+            </summary>
+        </member>
+        <member name="P:RBush.Envelope.Margin">
+            <summary>
+            Half of the linear perimeter of the bounding box
+            </summary>
+        </member>
+        <member name="M:RBush.Envelope.Extend(RBush.Envelope@)">
+            <summary>
+            Extends a bounding box to include another bounding box
+            </summary>
+            <param name="other">The other bounding box</param>
+            <returns>A new bounding box that encloses both bounding boxes.</returns>
+            <remarks>Does not affect the current bounding box.</remarks>
+        </member>
+        <member name="M:RBush.Envelope.Intersection(RBush.Envelope@)">
+            <summary>
+            Intersects a bounding box to only include the common area
+            of both bounding boxes
+            </summary>
+            <param name="other">The other bounding box</param>
+            <returns>A new bounding box that is the intersection of both bounding boxes.</returns>
+            <remarks>Does not affect the current bounding box.</remarks>
+        </member>
+        <member name="M:RBush.Envelope.Contains(RBush.Envelope@)">
+            <summary>
+            Determines whether <paramref name="other"/> is contained
+            within this bounding box.
+            </summary>
+            <param name="other">The other bounding box</param>
+            <returns>
+            <see langword="true" /> if <paramref name="other"/> is
+            completely contained within this bounding box; 
+            <see langword="false" /> otherwise.
+            </returns>
+        </member>
+        <member name="M:RBush.Envelope.Intersects(RBush.Envelope@)">
+            <summary>
+            Determines whether <paramref name="other"/> intersects
+            this bounding box.
+            </summary>
+            <param name="other">The other bounding box</param>
+            <returns>
+            <see langword="true" /> if <paramref name="other"/> is
+            intersects this bounding box in any way; 
+            <see langword="false" /> otherwise.
+            </returns>
+        </member>
+        <member name="P:RBush.Envelope.InfiniteBounds">
+            <summary>
+            A bounding box that contains the entire 2-d plane.
+            </summary>
+        </member>
+        <member name="P:RBush.Envelope.EmptyBounds">
+            <summary>
+            An empty bounding box.
+            </summary>
+        </member>
+        <member name="T:RBush.ISpatialData">
+            <summary>
+            Exposes an <see cref="P:RBush.ISpatialData.Envelope"/> that describes the
+            bounding box of current object.
+            </summary>
+        </member>
+        <member name="P:RBush.ISpatialData.Envelope">
+            <summary>
+            The bounding box of the current object.
+            </summary>
+        </member>
+        <member name="T:RBush.ISpatialDatabase`1">
+            <summary>
+            Provides the base interface for the abstraction for
+            an updateable data store of elements on a 2-d plane.
+            </summary>
+            <typeparam name="T">The type of elements in the index.</typeparam>
+        </member>
+        <member name="M:RBush.ISpatialDatabase`1.Insert(`0)">
+            <summary>
+            Adds an object to the <see cref="T:RBush.ISpatialDatabase`1"/>
+            </summary>
+            <param name="item">
+            The object to be added to <see cref="T:RBush.ISpatialDatabase`1"/>.
+            </param>
+        </member>
+        <member name="M:RBush.ISpatialDatabase`1.Delete(`0)">
+            <summary>
+            Removes an object from the <see cref="T:RBush.ISpatialDatabase`1"/>.
+            </summary>
+            <param name="item">
+            The object to be removed from the <see cref="T:RBush.ISpatialDatabase`1"/>.
+            </param>
+            <returns><see langword="bool" /> indicating whether the item was removed.</returns>
+        </member>
+        <member name="M:RBush.ISpatialDatabase`1.Clear">
+            <summary>
+            Removes all elements from the <see cref="T:RBush.ISpatialDatabase`1"/>.
+            </summary>
+        </member>
+        <member name="M:RBush.ISpatialDatabase`1.BulkLoad(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Adds all of the elements from the collection to the <see cref="T:RBush.ISpatialDatabase`1"/>.
+            </summary>
+            <param name="items">
+            A collection of items to add to the <see cref="T:RBush.ISpatialDatabase`1"/>.
+            </param>
+            <remarks>
+            For multiple items, this method is more performant than 
+            adding items individually via <see cref="M:RBush.ISpatialDatabase`1.Insert(`0)"/>.
+            </remarks>
+        </member>
+        <member name="T:RBush.ISpatialIndex`1">
+            <summary>
+            Provides the base interface for the abstraction of
+            an index to find points within a bounding box.
+            </summary>
+            <typeparam name="T">The type of elements in the index.</typeparam>
+        </member>
+        <member name="M:RBush.ISpatialIndex`1.Search">
+            <summary>
+            Get all of the elements within the current <see cref="T:RBush.ISpatialIndex`1"/>.
+            </summary>
+            <returns>
+            A list of every element contained in the <see cref="T:RBush.ISpatialIndex`1"/>.
+            </returns>
+        </member>
+        <member name="M:RBush.ISpatialIndex`1.Search(RBush.Envelope@)">
+            <summary>
+            Get all of the elements from this <see cref="T:RBush.ISpatialIndex`1"/>
+            within the <paramref name="boundingBox"/> bounding box.
+            </summary>
+            <param name="boundingBox">The area for which to find elements.</param>
+            <returns>
+            A list of the points that are within the bounding box
+            from this <see cref="T:RBush.ISpatialIndex`1"/>.
+            </returns>
+        </member>
+        <member name="T:RBush.RBush`1">
+            <summary>
+            An implementation of the R-tree data structure for 2-d spatial indexing.
+            </summary>
+            <typeparam name="T">The type of elements in the index.</typeparam>
+        </member>
+        <member name="P:RBush.RBush`1.Root">
+            <summary>
+            The root of the R-tree.
+            </summary>
+        </member>
+        <member name="P:RBush.RBush`1.Envelope">
+            <summary>
+            The bounding box of all elements currently in the data structure.
+            </summary>
+        </member>
+        <member name="M:RBush.RBush`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:RBush.RBush`1"/> that is
+            empty and has the default tree width and default <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>.
+            </summary>
+        </member>
+        <member name="M:RBush.RBush`1.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:RBush.RBush`1"/> that is
+            empty and has a custom max number of elements per tree node
+            and default <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>.
+            </summary>
+            <param name="maxEntries"></param>
+        </member>
+        <member name="M:RBush.RBush`1.#ctor(System.Int32,System.Collections.Generic.IEqualityComparer{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:RBush.RBush`1"/> that is
+            empty and has a custom max number of elements per tree node
+            and a custom <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>.
+            </summary>
+            <param name="maxEntries"></param>
+            <param name="comparer"></param>
+        </member>
+        <member name="P:RBush.RBush`1.Count">
+            <summary>
+            Gets the number of items currently stored in the <see cref="T:RBush.RBush`1"/>
+            </summary>
+        </member>
+        <member name="M:RBush.RBush`1.Clear">
+            <summary>
+            Removes all elements from the <see cref="T:RBush.RBush`1"/>.
+            </summary>
+        </member>
+        <member name="M:RBush.RBush`1.Search">
+            <summary>
+            Get all of the elements within the current <see cref="T:RBush.RBush`1"/>.
+            </summary>
+            <returns>
+            A list of every element contained in the <see cref="T:RBush.RBush`1"/>.
+            </returns>
+        </member>
+        <member name="M:RBush.RBush`1.Search(RBush.Envelope@)">
+            <summary>
+            Get all of the elements from this <see cref="T:RBush.RBush`1"/>
+            within the <paramref name="boundingBox"/> bounding box.
+            </summary>
+            <param name="boundingBox">The area for which to find elements.</param>
+            <returns>
+            A list of the points that are within the bounding box
+            from this <see cref="T:RBush.RBush`1"/>.
+            </returns>
+        </member>
+        <member name="M:RBush.RBush`1.Insert(`0)">
+            <summary>
+            Adds an object to the <see cref="T:RBush.RBush`1"/>
+            </summary>
+            <param name="item">
+            The object to be added to <see cref="T:RBush.RBush`1"/>.
+            </param>
+        </member>
+        <member name="M:RBush.RBush`1.BulkLoad(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Adds all of the elements from the collection to the <see cref="T:RBush.RBush`1"/>.
+            </summary>
+            <param name="items">
+            A collection of items to add to the <see cref="T:RBush.RBush`1"/>.
+            </param>
+            <remarks>
+            For multiple items, this method is more performant than 
+            adding items individually via <see cref="M:RBush.RBush`1.Insert(`0)"/>.
+            </remarks>
+        </member>
+        <member name="M:RBush.RBush`1.Delete(`0)">
+            <summary>
+            Removes an object from the <see cref="T:RBush.RBush`1"/>.
+            </summary>
+            <param name="item">
+            The object to be removed from the <see cref="T:RBush.RBush`1"/>.
+            </param>
+            <returns><see langword="bool" /> indicating whether the item was deleted.</returns>
+        </member>
+        <member name="T:RBush.RBush`1.Node">
+            <summary>
+            A node in an R-tree data structure containing other nodes
+            or elements of type <typeparamref name="T"/>.
+            </summary>
+        </member>
+        <member name="P:RBush.RBush`1.Node.Children">
+            <summary>
+            The descendent nodes or elements of a <see cref="T:RBush.RBush`1.Node"/>
+            </summary>
+        </member>
+        <member name="P:RBush.RBush`1.Node.Height">
+            <summary>
+            The current height of a <see cref="T:RBush.RBush`1.Node"/>. 
+            </summary>
+            <remarks>
+            A node containing individual elements has a <see cref="P:RBush.RBush`1.Node.Height"/> of 1.
+            </remarks>
+        </member>
+        <member name="P:RBush.RBush`1.Node.IsLeaf">
+            <summary>
+            Determines whether the current <see cref="T:RBush.RBush`1.Node"/> is a leaf node.
+            </summary>
+        </member>
+        <member name="P:RBush.RBush`1.Node.Envelope">
+            <summary>
+            Gets the bounding box of all of the descendents of the 
+            current <see cref="T:RBush.RBush`1.Node"/>.
+            </summary>
+        </member>
+        <member name="T:RBush.RBushExtensions">
+            <summary>
+            Extension methods for the <see cref="T:RBush.RBush`1"/> object.
+            </summary>
+        </member>
+        <member name="M:RBush.RBushExtensions.Knn``1(RBush.ISpatialIndex{``0},System.Int32,System.Double,System.Double,System.Nullable{System.Double},System.Func{``0,System.Boolean})">
+            <summary>
+            Get the <paramref name="k"/> nearest neighbors to a specific point.
+            </summary>
+            <typeparam name="T">The type of elements in the index.</typeparam>
+            <param name="tree">An index of points.</param>
+            <param name="k">The number of points to retrieve.</param>
+            <param name="x">The x-coordinate of the center point.</param>
+            <param name="y">The y-coordinate of the center point.</param>
+            <param name="maxDistance">The maximum distance of points to be considered "near"; optional.</param>
+            <param name="predicate">A function to test each element for a condition; optional.</param>
+            <returns>The list of up to <paramref name="k"/> elements nearest to the given point.</returns>
+        </member>
+        <member name="M:RBush.RBushExtensions.DistanceTo(RBush.Envelope@,System.Double,System.Double)">
+            <summary>
+            Calculates the distance from the borders of an <see cref="T:RBush.Envelope"/>
+            to a given point.
+            </summary>
+            <param name="envelope">The <see cref="T:RBush.Envelope"/> from which to find the distance</param>
+            <param name="x">The x-coordinate of the given point</param>
+            <param name="y">The y-coordinate of the given point</param>
+            <returns>The calculated Euclidean shortest distance from the <paramref name="envelope"/> to a given point.</returns>
+        </member>
+    </members>
+</doc>

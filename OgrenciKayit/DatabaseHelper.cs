@@ -273,18 +273,24 @@ namespace OgrenciKayit
         // Schools
         public static DataTable GetSchools(string search = "")
         {
-            using (var con = GetConnection())
-            using (var cmd = new MySqlCommand(
-                @"SELECT s.Id, s.Name, c.Name AS CityName, s.CityId
-                  FROM Schools s
-                  LEFT JOIN Cities c ON s.CityId = c.Id
-                  WHERE s.Name LIKE @search OR c.Name LIKE @search", con))
-            using (var da = new MySqlDataAdapter(cmd))
+            using (var conn = GetConnection())
             {
-                cmd.Parameters.AddWithValue("@search", "%" + search + "%");
-                var dt = new DataTable();
-                da.Fill(dt);
-                return dt;
+                conn.Open();
+                string sql = @"SELECT s.Id, s.Name, s.CityId, c.Name AS CityName
+                               FROM schools s
+                               LEFT JOIN cities c ON s.CityId = c.Id
+                               WHERE (@search = '' OR s.Name LIKE @searchLike)";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@search", search);
+                    cmd.Parameters.AddWithValue("@searchLike", "%" + search + "%");
+                    using (var da = new MySqlDataAdapter(cmd))
+                    {
+                        var dt = new DataTable();
+                        da.Fill(dt);
+                        return dt;
+                    }
+                }
             }
         }
 
