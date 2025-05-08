@@ -70,7 +70,7 @@ Bu proje, eğitim kurumları için tasarlanmış kapsamlı bir öğrenci yöneti
 
 1. Repoyu bilgisayarınıza klonlayın:
    ```bash
-   git clone https://github.com/username/OgrenciKayit.git
+   git clone https://github.com/TMBilalTM/OgrenciKayit.git
    ```
 
 2. Visual Studio ile projeyi açın
@@ -88,7 +88,7 @@ Bu proje, eğitim kurumları için tasarlanmış kapsamlı bir öğrenci yöneti
 
 ## 📞 İletişim
 
-Sorularınız veya önerileriniz için [contact@example.com](mailto:contact@example.com) adresinden iletişime geçebilirsiniz.
+Sorularınız veya önerileriniz için [bilpcukbilo@gmail.com](mailto:bilpcukbilo@gmail.com) adresinden iletişime geçebilirsiniz.
 
 ---
 
