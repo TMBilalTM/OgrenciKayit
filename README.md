@@ -58,6 +58,13 @@ Bu proje, eğitim kurumları için tasarlanmış kapsamlı bir öğrenci yöneti
   <img src="https://github.com/user-attachments/assets/d65e2a66-d427-45a2-8281-0e3062b7555f" alt="Veri Silme" width="80%">
 </div>
 
+### Verileri Excele Aktarma
+*Güvenli ve hızlı şekilde verileri excel çıktısı olarak alabiliyorsunuz!*
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/cfad8845-c594-47f4-a75f-de8a48a71d1e" alt="Excel Aktarımı" width="80%">
+</div>
+
 ## 🛠️ Teknolojiler
 
 - **Backend**: C#, .NET Framework
