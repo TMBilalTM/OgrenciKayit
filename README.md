@@ -93,5 +93,5 @@ Sorularınız veya önerileriniz için [bilpcukbilo@gmail.com](mailto:bilpcukbil
 ---
 
 <div align="center">
-  <p>© 2023 Öğrenci Kayıt Sistemi | Tüm Hakları Saklıdır</p>
+  <p>© 2025 Öğrenci Kayıt Sistemi | Tüm Hakları Saklıdır</p>
 </div>
