@@ -8,24 +8,19 @@ namespace OgrenciKayit
 {
     public class DatabaseHelper
     {
-        // MySQL connection string
         private static string connectionString = "Server=localhost;Database=ogrencikayit;Uid=root;Pwd=;";
         
-        // Get connection
         public static MySqlConnection GetConnection()
         {
             return new MySqlConnection(connectionString);
         }
 
-        // Hash a password using SHA256
         public static string HashPassword(string password)
         {
             using (SHA256 sha256 = SHA256.Create())
             {
-                // Convert the input string to a byte array and compute the hash
                 byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
 
-                // Convert byte array to a string
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < bytes.Length; i++)
                 {
@@ -35,7 +30,6 @@ namespace OgrenciKayit
             }
         }
         
-        // Verify admin login
         public static bool VerifyLogin(string username, string password)
         {
             try
@@ -51,10 +45,9 @@ namespace OgrenciKayit
                     
                     if (storedHash == null)
                     {
-                        return false; // User not found
+                        return false; 
                     }
                     
-                    // Hash the provided password and compare with stored hash
                     string hashedInputPassword = HashPassword(password);
                     return storedHash == hashedInputPassword;
                 }
@@ -66,12 +59,10 @@ namespace OgrenciKayit
             }
         }
         
-        // Initialize database if needed
         public static bool InitializeDatabase()
         {
             try
             {
-                // Create database if it doesn't exist
                 MySqlConnection connectionWithoutDb = new MySqlConnection("Server=localhost;Uid=root;Pwd=;");
                 connectionWithoutDb.Open();
                 
@@ -80,12 +71,10 @@ namespace OgrenciKayit
                 createDbCommand.ExecuteNonQuery();
                 connectionWithoutDb.Close();
                 
-                // Create tables using our normal connection
                 using (MySqlConnection connection = GetConnection())
                 {
                     connection.Open();
                     
-                    // Admin table
                     string createAdminTable = @"CREATE TABLE IF NOT EXISTS admin (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         username VARCHAR(50) NOT NULL UNIQUE,
@@ -93,19 +82,16 @@ namespace OgrenciKayit
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )";
                     
-                    // Departments table
                     string createDepartmentsTable = @"CREATE TABLE IF NOT EXISTS Departments (
                         Id INT AUTO_INCREMENT PRIMARY KEY,
                         Name VARCHAR(100) NOT NULL
                     )";
 
-                    // Cities table
                     string createCitiesTable = @"CREATE TABLE IF NOT EXISTS Cities (
                         Id INT AUTO_INCREMENT PRIMARY KEY,
                         Name VARCHAR(100) NOT NULL
                     )";
 
-                    // Schools table (now with CityId)
                     string createSchoolsTable = @"CREATE TABLE IF NOT EXISTS Schools (
                         Id INT AUTO_INCREMENT PRIMARY KEY,
                         Name VARCHAR(100) NOT NULL,
@@ -113,7 +99,6 @@ namespace OgrenciKayit
                         FOREIGN KEY (CityId) REFERENCES Cities(Id)
                     )";
 
-                    // Students table (updated with all required fields)
                     string createOgrencilerTable = @"CREATE TABLE IF NOT EXISTS ogrenciler (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         ogrenci_no VARCHAR(20) NOT NULL UNIQUE,
@@ -138,21 +123,18 @@ namespace OgrenciKayit
                         FOREIGN KEY (onceki_okul_id) REFERENCES Schools(Id)
                     )";
                     
-                    // Execute creation queries
                     new MySqlCommand(createAdminTable, connection).ExecuteNonQuery();
                     new MySqlCommand(createDepartmentsTable, connection).ExecuteNonQuery();
                     new MySqlCommand(createCitiesTable, connection).ExecuteNonQuery();
                     new MySqlCommand(createSchoolsTable, connection).ExecuteNonQuery();
                     new MySqlCommand(createOgrencilerTable, connection).ExecuteNonQuery();
                     
-                    // Insert default admin if not exists
                     string checkAdminQuery = "SELECT COUNT(*) FROM admin";
                     MySqlCommand checkCommand = new MySqlCommand(checkAdminQuery, connection);
                     int adminCount = Convert.ToInt32(checkCommand.ExecuteScalar());
                     
                     if (adminCount == 0)
                     {
-                        // Hash the default admin password
                         string defaultPassword = "admin123";
                         string hashedPassword = HashPassword(defaultPassword);
                         
@@ -172,7 +154,6 @@ namespace OgrenciKayit
             }
         }
 
-        // Departments
         public static DataTable GetDepartments(string search = "")
         {
             using (var con = GetConnection())
@@ -221,7 +202,6 @@ namespace OgrenciKayit
             }
         }
 
-        // Cities
         public static DataTable GetCities(string search = "")
         {
             using (var con = GetConnection())
@@ -270,7 +250,6 @@ namespace OgrenciKayit
             }
         }
 
-        // Schools
         public static DataTable GetSchools(string search = "")
         {
             using (var conn = GetConnection())
@@ -319,7 +298,6 @@ namespace OgrenciKayit
             }
         }
 
-        // Overloads for backward compatibility (if needed)
         public static void AddSchool(string name)
         {
             AddSchool(name, 0);
@@ -341,7 +319,6 @@ namespace OgrenciKayit
             }
         }
 
-        // Students CRUD
         public static DataTable GetStudents(string search = "")
         {
             using (var con = GetConnection())
@@ -373,6 +350,26 @@ namespace OgrenciKayit
                     cmd.Parameters.AddWithValue("@id", excludeId.Value);
                 con.Open();
                 return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+            }
+        }
+
+        public static bool IsIdentityNumberExists(string kimlikNo, int? excludeStudentId = null)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT COUNT(*) FROM ogrenciler WHERE kktc_kimlik_no = @kimlikNo";
+                    if (excludeStudentId.HasValue)
+                    {
+                        cmd.CommandText += " AND id <> @id";
+                        cmd.Parameters.AddWithValue("@id", excludeStudentId.Value);
+                    }
+                    cmd.Parameters.AddWithValue("@kimlikNo", kimlikNo);
+                    int count = Convert.ToInt32(cmd.ExecuteScalar());
+                    return count > 0;
+                }
             }
         }
 
