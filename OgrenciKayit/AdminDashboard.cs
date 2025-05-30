@@ -2,13 +2,12 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Data;
-using System.IO; // ekle
+using System.IO;
 
 namespace OgrenciKayit
 {
     public partial class AdminDashboard : Form
     {
-        // Pagination helpers
         private int studentsPage = 1, studentsPageSize = 50, studentsTotal = 0;
         private int departmentsPage = 1, departmentsPageSize = 50, departmentsTotal = 0;
         private int schoolsPage = 1, schoolsPageSize = 50, schoolsTotal = 0;
@@ -17,22 +16,14 @@ namespace OgrenciKayit
         public AdminDashboard()
         {
             InitializeComponent();
-
-            // Modern style
             FormUtils.StyleForm(this);
-
-            // Modernize navbar buttons
             StyleNavButton(btnStudents);
             StyleNavButton(btnSchools);
             StyleNavButton(btnDepartments);
             StyleNavButton(btnCities);
-
-            // Style other buttons
             FormUtils.StyleButton(btnLogout);
             FormUtils.StyleButton(btnMinimize);
             FormUtils.StyleButton(btnClose);
-
-            // Enable drag for top panel if exists
             if (panelTop != null)
                 FormUtils.EnableFormDrag(this, panelTop);
         }
@@ -41,22 +32,16 @@ namespace OgrenciKayit
         {
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 0;
-            button.Font = new Font("Segoe UI", 12, FontStyle.Bold); // DÜZELTÝLDÝ: SemiBold yerine Bold ve FontFamily hatasý giderildi
+            button.Font = new Font("Segoe UI", 12, FontStyle.Bold);
             button.TextAlign = ContentAlignment.MiddleLeft;
-            button.Padding = new Padding(32, 0, 0, 0); // Sol padding artýrýldý
-            button.Height = 48; // Yükseklik artýrýldý
-
-            // Modern margin ekle (yalnýzca ilk yüklemede, tekrar eklenmez)
+            button.Padding = new Padding(32, 0, 0, 0);
+            button.Height = 48;
             if (button.Margin.Top < 10)
                 button.Margin = new Padding(0, 10, 0, 0);
-
-            // Modern arka plan ve hover efektleri
             button.BackColor = ThemeColors.PrimaryDark;
             button.ForeColor = Color.White;
             button.FlatAppearance.MouseOverBackColor = ThemeColors.PrimaryLight;
             button.FlatAppearance.MouseDownBackColor = ThemeColors.PrimaryMedium;
-
-            // Hover efekti
             button.MouseEnter += (s, e) => {
                 if (button.BackColor != ThemeColors.PrimaryMedium)
                     button.BackColor = ThemeColors.PrimaryLight;
@@ -69,41 +54,26 @@ namespace OgrenciKayit
 
         private void AdminDashboard_Load(object sender, EventArgs e)
         {
-            // Set welcome message
-            lblWelcome.Text = "Hoþ Geldiniz, Admin!";
-            
-            // Update status
-            lblStatus.Text = "Durum: Baðlý";
-
-            // Update the date
+            lblWelcome.Text = "HoÅŸ Geldiniz, Admin!";
+            lblStatus.Text = "Durum: BaÄŸlÄ±";
             lblDate.Text = DateTime.Now.ToString("dd.MM.yyyy");
-            
-            // Update colors
             panelTop.BackColor = ThemeColors.PrimaryDark;
             panelSidebar.BackColor = ThemeColors.PrimaryDark;
-            //panelSidebarInfo.BackColor = ThemeColors.PrimaryMedium;
             panelContent.BackColor = ThemeColors.BackgroundLight;
-            
-            // Select first tab by default
             ShowSelectedPanel(panelStudents);
             btnStudents.BackColor = ThemeColors.PrimaryMedium;
-            lblCurrentSection.Text = "Öðrenciler";
-
+            lblCurrentSection.Text = "Ã–ÄŸrenciler";
             LoadDepartments();
             LoadCities();
             LoadSchools();
-            LoadStudents(); // <-- EKLENDÝ: Öðrenciler grid'i ilk açýlýþta dolu gelsin
-
-            // Attach live search events
+            LoadStudents();
             txtDepartmentSearch.TextChanged += txtDepartmentSearch_TextChanged;
             txtCitySearch.TextChanged += txtCitySearch_TextChanged;
             txtSchoolSearch.TextChanged += txtSchoolSearch_TextChanged;
             txtStudentSearch.TextChanged += txtStudentSearch_TextChanged;
-
-            // Modern ve renkli bilgi kutusu metin renkleri
-            lblWelcome.ForeColor = Color.FromArgb(33, 150, 243); // Modern mavi
-            lblStatus.ForeColor = Color.FromArgb(76, 175, 80);   // Modern yeþil
-            lblDate.ForeColor = Color.FromArgb(120, 144, 156);   // Modern gri
+            lblWelcome.ForeColor = Color.FromArgb(33, 150, 243);
+            lblStatus.ForeColor = Color.FromArgb(76, 175, 80);
+            lblDate.ForeColor = Color.FromArgb(120, 144, 156);
         }
 
         private void AdminDashboard_FormClosed(object sender, FormClosedEventArgs e)
@@ -123,7 +93,7 @@ namespace OgrenciKayit
             ResetNavButtonColors();
             btnStudents.BackColor = ThemeColors.PrimaryMedium;
             ShowSelectedPanel(panelStudents);
-            lblCurrentSection.Text = "Öðrenciler";
+            lblCurrentSection.Text = "Ã–ÄŸrenciler";
         }
 
         private void btnSchools_Click(object sender, EventArgs e)
@@ -139,7 +109,7 @@ namespace OgrenciKayit
             ResetNavButtonColors();
             btnDepartments.BackColor = ThemeColors.PrimaryMedium;
             ShowSelectedPanel(panelDepartments);
-            lblCurrentSection.Text = "Bölümler";
+            lblCurrentSection.Text = "BÃ¶lÃ¼mler";
         }
 
         private void btnCities_Click(object sender, EventArgs e)
@@ -147,7 +117,7 @@ namespace OgrenciKayit
             ResetNavButtonColors();
             btnCities.BackColor = ThemeColors.PrimaryMedium;
             ShowSelectedPanel(panelCities);
-            lblCurrentSection.Text = "Þehirler";
+            lblCurrentSection.Text = "Åžehirler";
         }
         
         private void ResetNavButtonColors()
@@ -160,13 +130,10 @@ namespace OgrenciKayit
 
         private void ShowSelectedPanel(Panel selectedPanel)
         {
-            // Hide all panels
             panelStudents.Visible = false;
             panelSchools.Visible = false;
             panelDepartments.Visible = false;
             panelCities.Visible = false;
-
-            // Show selected panel
             selectedPanel.Visible = true;
         }
 
@@ -182,23 +149,62 @@ namespace OgrenciKayit
 
         private void UpdateStatusStrips()
         {
-            toolStripStatusLabelStudents.Text = $"Öðrenciler: {studentsTotal} kayýt";
-            toolStripStatusLabelDepartments.Text = $"Bölümler: {departmentsTotal} kayýt";
-            toolStripStatusLabelSchools.Text = $"Okullar: {schoolsTotal} kayýt";
-            toolStripStatusLabelCities.Text = $"Þehirler: {citiesTotal} kayýt";
+            toolStripStatusLabelStudents.Text = $"Ã–ÄŸrenciler: {studentsTotal} kayÄ±t";
+            toolStripStatusLabelDepartments.Text = $"BÃ¶lÃ¼mler: {departmentsTotal} kayÄ±t";
+            toolStripStatusLabelSchools.Text = $"Okullar: {schoolsTotal} kayÄ±t";
+            toolStripStatusLabelCities.Text = $"Åžehirler: {citiesTotal} kayÄ±t";
         }
 
-        // --- Departments CRUD & Search ---
+        // DataGridView gÃ¶rÃ¼nÃ¼mÃ¼nÃ¼ iyileÅŸtir
+        private void StyleDataGridView(DataGridView dgv)
+        {
+            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 11);
+            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 12, FontStyle.Bold);
+            dgv.RowTemplate.Height = 36;
+            dgv.ColumnHeadersHeight = 40;
+            dgv.DefaultCellStyle.Padding = new Padding(8, 4, 8, 4);
+            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgv.MultiSelect = false;
+            dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
+            dgv.AllowUserToResizeRows = false;
+            dgv.AllowUserToResizeColumns = true;
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+            dgv.EnableHeadersVisualStyles = false;
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(33, 150, 243);
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgv.GridColor = Color.LightGray;
+            dgv.BackgroundColor = Color.White;
+            dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 230, 255);
+            dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
+            dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgv.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgv.ScrollBars = ScrollBars.Both;
+
+            // Minimum column width ayarla
+            foreach (DataGridViewColumn col in dgv.Columns)
+            {
+                col.MinimumWidth = 100;
+                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+            }
+        }
+
         private void LoadDepartments(string search = "")
         {
             var result = PaginationHelper.GetDepartmentsPaged(search, departmentsPage, departmentsPageSize, out departmentsTotal);
             dgvDepartments.DataSource = result;
             if (dgvDepartments.Columns.Contains("Name"))
-                dgvDepartments.Columns["Name"].HeaderText = "Bölüm Adý";
+                dgvDepartments.Columns["Name"].HeaderText = "BÃ¶lÃ¼m AdÄ±";
             if (dgvDepartments.Columns.Contains("Id"))
                 dgvDepartments.Columns["Id"].Visible = false;
-            UpdateStatusStrips();
             dgvDepartments.ScrollBars = ScrollBars.Both;
+            StyleDataGridView(dgvDepartments);
+
+            // StatusStrip gÃ¼ncellemesi
+            if (!string.IsNullOrWhiteSpace(search))
+                toolStripStatusLabelDepartments.Text = $"Arama sonucu: toplam {departmentsTotal} kayÄ±t bulundu.";
+            else
+                toolStripStatusLabelDepartments.Text = $"BÃ¶lÃ¼mler: {departmentsTotal} kayÄ±t";
         }
 
         private void btnDepartmentSearch_Click(object sender, EventArgs e)
@@ -236,24 +242,28 @@ namespace OgrenciKayit
         {
             if (dgvDepartments.CurrentRow == null) return;
             int id = Convert.ToInt32(dgvDepartments.CurrentRow.Cells["Id"].Value);
-            if (MessageBox.Show("Silmek istediðinize emin misiniz?", "Onay", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Silmek istediÄŸinize emin misiniz?", "Onay", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 DatabaseHelper.DeleteDepartment(id);
                 LoadDepartments();
             }
         }
 
-        // --- Cities CRUD & Search ---
         private void LoadCities(string search = "")
         {
             var result = PaginationHelper.GetCitiesPaged(search, citiesPage, citiesPageSize, out citiesTotal);
             dgvCities.DataSource = result;
             if (dgvCities.Columns.Contains("Name"))
-                dgvCities.Columns["Name"].HeaderText = "Þehir Adý";
+                dgvCities.Columns["Name"].HeaderText = "Åžehir AdÄ±";
             if (dgvCities.Columns.Contains("Id"))
                 dgvCities.Columns["Id"].Visible = false;
-            UpdateStatusStrips();
             dgvCities.ScrollBars = ScrollBars.Both;
+            StyleDataGridView(dgvCities);
+
+            if (!string.IsNullOrWhiteSpace(search))
+                toolStripStatusLabelCities.Text = $"Arama sonucu: toplam {citiesTotal} kayÄ±t bulundu.";
+            else
+                toolStripStatusLabelCities.Text = $"Åžehirler: {citiesTotal} kayÄ±t";
         }
 
         private void btnCitySearch_Click(object sender, EventArgs e)
@@ -291,28 +301,33 @@ namespace OgrenciKayit
         {
             if (dgvCities.CurrentRow == null) return;
             int id = Convert.ToInt32(dgvCities.CurrentRow.Cells["Id"].Value);
-            if (MessageBox.Show("Silmek istediðinize emin misiniz?", "Onay", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Silmek istediÄŸinize emin misiniz?", "Onay", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 DatabaseHelper.DeleteCity(id);
                 LoadCities();
             }
         }
 
-        // --- Schools CRUD & Search ---
         private void LoadSchools(string search = "")
         {
             var result = DatabaseHelper.GetSchools(search);
             dgvSchools.DataSource = result;
             if (dgvSchools.Columns.Contains("Name"))
-                dgvSchools.Columns["Name"].HeaderText = "Okul Adý";
+                dgvSchools.Columns["Name"].HeaderText = "Okul AdÄ±";
             if (dgvSchools.Columns.Contains("CityName"))
-                dgvSchools.Columns["CityName"].HeaderText = "Þehir";
+                dgvSchools.Columns["CityName"].HeaderText = "Åžehir";
             if (dgvSchools.Columns.Contains("Id"))
                 dgvSchools.Columns["Id"].Visible = false;
             if (dgvSchools.Columns.Contains("CityId"))
-                dgvSchools.Columns["CityId"].Visible = false; // CityId gizli, CityName görünüyor
-            UpdateStatusStrips();
+                dgvSchools.Columns["CityId"].Visible = false;
             dgvSchools.ScrollBars = ScrollBars.Both;
+            StyleDataGridView(dgvSchools);
+
+            int total = result != null ? result.Rows.Count : 0;
+            if (!string.IsNullOrWhiteSpace(search))
+                toolStripStatusLabelSchools.Text = $"Arama sonucu: toplam {total} kayÄ±t bulundu.";
+            else
+                toolStripStatusLabelSchools.Text = $"Okullar: {total} kayÄ±t";
         }
 
         private void btnSchoolSearch_Click(object sender, EventArgs e)
@@ -353,20 +368,17 @@ namespace OgrenciKayit
         {
             if (dgvSchools.CurrentRow == null) return;
             int id = Convert.ToInt32(dgvSchools.CurrentRow.Cells["Id"].Value);
-            if (MessageBox.Show("Silmek istediðinize emin misiniz?", "Onay", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Silmek istediÄŸinize emin misiniz?", "Onay", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 DatabaseHelper.DeleteSchool(id);
                 LoadSchools();
             }
         }
 
-        // --- Students CRUD & Search ---
         private void LoadStudents(string search = "")
         {
             var result = PaginationHelper.GetStudentsPaged(search, studentsPage, studentsPageSize, out studentsTotal);
             dgvStudents.DataSource = result;
-
-            // Sadece önemli sütunlar görünsün, diðerleri gizli kalsýn
             if (dgvStudents.Columns.Contains("id"))
                 dgvStudents.Columns["id"].Visible = false;
             if (dgvStudents.Columns.Contains("bolum_id"))
@@ -386,11 +398,13 @@ namespace OgrenciKayit
             if (dgvStudents.Columns.Contains("telefon"))
                 dgvStudents.Columns["telefon"].Visible = false;
             if (dgvStudents.Columns.Contains("kayit_tarihi"))
-                dgvStudents.Columns["kayit_tarihi"].Visible = false;
-
-            // Baþlýklarý ayarla (görünenler)
+            {
+                dgvStudents.Columns["kayit_tarihi"].Visible = true;
+                dgvStudents.Columns["kayit_tarihi"].HeaderText = "KayÄ±t Tarihi";
+                dgvStudents.Columns["kayit_tarihi"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
+            }
             if (dgvStudents.Columns.Contains("ogrenci_no"))
-                dgvStudents.Columns["ogrenci_no"].HeaderText = "Öðrenci No";
+                dgvStudents.Columns["ogrenci_no"].HeaderText = "Ã–ÄŸrenci No";
             if (dgvStudents.Columns.Contains("ad"))
                 dgvStudents.Columns["ad"].HeaderText = "Ad";
             if (dgvStudents.Columns.Contains("soyad"))
@@ -398,20 +412,24 @@ namespace OgrenciKayit
             if (dgvStudents.Columns.Contains("cinsiyet"))
                 dgvStudents.Columns["cinsiyet"].HeaderText = "Cinsiyet";
             if (dgvStudents.Columns.Contains("bolum"))
-                dgvStudents.Columns["bolum"].HeaderText = "Bölüm";
+                dgvStudents.Columns["bolum"].HeaderText = "BÃ¶lÃ¼m";
             if (dgvStudents.Columns.Contains("okul"))
                 dgvStudents.Columns["okul"].HeaderText = "Okul";
             if (dgvStudents.Columns.Contains("sinif"))
-                dgvStudents.Columns["sinif"].HeaderText = "Sýnýf";
+                dgvStudents.Columns["sinif"].HeaderText = "SÄ±nÄ±f";
             if (dgvStudents.Columns.Contains("yil"))
-                dgvStudents.Columns["yil"].HeaderText = "Yýl";
+                dgvStudents.Columns["yil"].HeaderText = "YÄ±l";
             if (dgvStudents.Columns.Contains("veli_adi"))
-                dgvStudents.Columns["veli_adi"].HeaderText = "Veli Adý";
+                dgvStudents.Columns["veli_adi"].HeaderText = "Veli AdÄ±";
             if (dgvStudents.Columns.Contains("onceki_okul"))
-                dgvStudents.Columns["onceki_okul"].HeaderText = "Önceki Okul";
-
-            UpdateStatusStrips();
+                dgvStudents.Columns["onceki_okul"].HeaderText = "Ã–nceki Okul";
             dgvStudents.ScrollBars = ScrollBars.Both;
+            StyleDataGridView(dgvStudents);
+
+            if (!string.IsNullOrWhiteSpace(search))
+                toolStripStatusLabelStudents.Text = $"Arama sonucu: toplam {studentsTotal} kayÄ±t bulundu.";
+            else
+                toolStripStatusLabelStudents.Text = $"Ã–ÄŸrenciler: {studentsTotal} kayÄ±t";
         }
 
         private void btnStudentSearch_Click(object sender, EventArgs e)
@@ -454,8 +472,11 @@ namespace OgrenciKayit
             string veliTel = row.Cells["veli_telefon"].Value.ToString();
             int okulId = row.Cells["okul_id"].Value != DBNull.Value ? Convert.ToInt32(row.Cells["okul_id"].Value) : 0;
             int oncekiOkulId = row.Cells["onceki_okul_id"].Value != DBNull.Value ? Convert.ToInt32(row.Cells["onceki_okul_id"].Value) : 0;
+            DateTime kayitTarihi = row.Cells["kayit_tarihi"].Value != DBNull.Value
+                ? Convert.ToDateTime(row.Cells["kayit_tarihi"].Value)
+                : DateTime.Now;
 
-            using (var frm = new StudentEditForm(id, ogrNo, ad, soyad, dogum, cinsiyet, email, telefon, adres, bolumId, sinif, yil, kimlik, veliAd, veliTel, okulId, oncekiOkulId))
+            using (var frm = new StudentEditForm(id, ogrNo, ad, soyad, dogum, cinsiyet, email, telefon, adres, bolumId, sinif, yil, kimlik, veliAd, veliTel, okulId, oncekiOkulId, kayitTarihi))
             {
                 if (frm.ShowDialog() == DialogResult.OK)
                     LoadStudents();
@@ -466,7 +487,7 @@ namespace OgrenciKayit
         {
             if (dgvStudents.CurrentRow == null) return;
             int id = Convert.ToInt32(dgvStudents.CurrentRow.Cells["id"].Value);
-            if (MessageBox.Show("Silmek istediðinize emin misiniz?", "Onay", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Silmek istediÄŸinize emin misiniz?", "Onay", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 DatabaseHelper.DeleteStudent(id);
                 LoadStudents();
@@ -497,16 +518,14 @@ namespace OgrenciKayit
                 exportTable = dgvCities.DataSource as DataTable;
                 fileName = "sehirler.xlsx";
             }
-
             if (exportTable == null || exportTable.Rows.Count == 0)
             {
-                MessageBox.Show("Aktarýlacak veri yok.", "Uyarý", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("AktarÄ±lacak veri yok.", "UyarÄ±", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
-                sfd.Filter = "Excel Dosyasý (*.xlsx)|*.xlsx|CSV Dosyasý (*.csv)|*.csv";
+                sfd.Filter = "Excel DosyasÄ± (*.xlsx)|*.xlsx|CSV DosyasÄ± (*.csv)|*.csv";
                 sfd.FileName = fileName;
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
@@ -520,11 +539,11 @@ namespace OgrenciKayit
                         {
                             ExcelExportHelper.ExportToExcel(exportTable, sfd.FileName);
                         }
-                        MessageBox.Show("Veriler baþarýyla dýþa aktarýldý.", "Baþarýlý", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Veriler baÅŸarÄ±yla dÄ±ÅŸa aktarÄ±ldÄ±.", "BaÅŸarÄ±lÄ±", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Dýþa aktarma sýrasýnda bir hata oluþtu.\n\n" + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("DÄ±ÅŸa aktarma sÄ±rasÄ±nda bir hata oluÅŸtu.\n\n" + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
