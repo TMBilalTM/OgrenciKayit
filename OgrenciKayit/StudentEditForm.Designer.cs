@@ -4,6 +4,7 @@ namespace OgrenciKayit
     {
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Label lblOgrNo, lblAd, lblSoyad, lblDogum, lblCinsiyet, lblEmail, lblTelefon, lblAdres, lblBolum, lblSinif, lblYil, lblKimlik, lblVeliAd, lblVeliTel, lblOkul, lblOncekiOkul;
+        private System.Windows.Forms.Label lblKayitTarihiLabel, lblKayitTarihi;
         private System.Windows.Forms.TextBox txtOgrNo, txtAd, txtSoyad, txtEmail, txtTelefon, txtAdres, txtSinif, txtYil, txtKimlik, txtVeliAd, txtVeliTel;
         private System.Windows.Forms.ComboBox cmbCinsiyet, cmbBolum, cmbOkul, cmbOncekiOkul;
         private System.Windows.Forms.DateTimePicker dtDogum;
@@ -50,6 +51,8 @@ namespace OgrenciKayit
             this.cmbOkul = new System.Windows.Forms.ComboBox();
             this.lblOncekiOkul = new System.Windows.Forms.Label();
             this.cmbOncekiOkul = new System.Windows.Forms.ComboBox();
+            this.lblKayitTarihiLabel = new System.Windows.Forms.Label();
+            this.lblKayitTarihi = new System.Windows.Forms.Label();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
 
@@ -71,28 +74,29 @@ namespace OgrenciKayit
             this.lblVeliTel.SetBounds(xLabel, y, wLabel, h); this.txtVeliTel.SetBounds(xInput, y, wInput, h); y += gap;
             this.lblOkul.SetBounds(xLabel, y, wLabel, h); this.cmbOkul.SetBounds(xInput, y, wInput, h); y += gap;
             this.lblOncekiOkul.SetBounds(xLabel, y, wLabel, h); this.cmbOncekiOkul.SetBounds(xInput, y, wInput, h); y += gap;
+            this.lblKayitTarihiLabel.SetBounds(xLabel, y, wLabel, h); this.lblKayitTarihi.SetBounds(xInput, y, wInput, h); y += gap;
             this.btnSave.SetBounds(xInput, y, 90, 32); this.btnCancel.SetBounds(xInput + 110, y, 90, 32);
 
             // Set labels
-            this.lblOgrNo.Text = "Öðrenci No:";
+            this.lblOgrNo.Text = "Ã–ÄŸrenci No:";
             this.lblAd.Text = "Ad:";
             this.lblSoyad.Text = "Soyad:";
-            this.lblDogum.Text = "Doðum Tarihi:";
+            this.lblDogum.Text = "DoÄŸum Tarihi:";
             this.lblCinsiyet.Text = "Cinsiyet:";
             this.lblEmail.Text = "E-posta:";
             this.lblTelefon.Text = "Telefon:";
             this.lblAdres.Text = "Adres:";
-            this.lblBolum.Text = "Bölüm:";
-            this.lblSinif.Text = "Sýnýf:";
-            this.lblYil.Text = "Yýl:";
+            this.lblBolum.Text = "BÃ¶lÃ¼m:";
+            this.lblSinif.Text = "SÄ±nÄ±f:";
+            this.lblYil.Text = "YÄ±l:";
             this.lblKimlik.Text = "KKTC Kimlik No:";
-            this.lblVeliAd.Text = "Veli Adý:";
+            this.lblVeliAd.Text = "Veli AdÄ±:";
             this.lblVeliTel.Text = "Veli Telefon:";
             this.lblOkul.Text = "Okul:";
-            this.lblOncekiOkul.Text = "Önceki Okul:";
+            this.lblOncekiOkul.Text = "Ã–nceki Okul:";
 
             // ComboBox items
-            this.cmbCinsiyet.Items.AddRange(new object[] { "Erkek", "Kadýn" });
+            this.cmbCinsiyet.Items.AddRange(new object[] { "Erkek", "KadÄ±n" });
             this.cmbCinsiyet.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbBolum.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbOkul.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -106,8 +110,14 @@ namespace OgrenciKayit
             // Buttons
             this.btnSave.Text = "Kaydet";
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            this.btnCancel.Text = "Ýptal";
+            this.btnCancel.Text = "Ä°ptal";
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+
+            // TextBox events
+            this.txtAd.Name = "txtAd";
+            this.txtAd.TextChanged += new System.EventHandler(this.txtAd_TextChanged);
+            this.txtSoyad.Name = "txtSoyad";
+            this.txtSoyad.TextChanged += new System.EventHandler(this.txtSoyad_TextChanged);
 
             // Add controls
             this.Controls.AddRange(new System.Windows.Forms.Control[] {
@@ -124,7 +134,7 @@ namespace OgrenciKayit
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Öðrenci Kaydý";
+            this.Text = "Ã–ÄŸrenci KaydÄ±";
             this.Load += new System.EventHandler(this.StudentEditForm_Load);
 
             // Modern style
