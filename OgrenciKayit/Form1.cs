@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -20,15 +20,12 @@ namespace OgrenciKayit
             this.MaximizeBox = false;
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            // Modern style
             FormUtils.StyleForm(this);
 
-            // Modernize buttons
             FormUtils.StyleButton(btnLogin);
             FormUtils.StyleButton(btnClose);
             FormUtils.StyleButton(btnMinimize);
 
-            // Enable drag for top panel if exists
             if (panelTop != null)
                 FormUtils.EnableFormDrag(this, panelTop);
         }
@@ -43,7 +40,6 @@ namespace OgrenciKayit
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
 
-            // Basic validation
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 lblError.Visible = true;
@@ -58,7 +54,6 @@ namespace OgrenciKayit
                     lblError.Visible = false;
                     MessageBox.Show("Giriş başarılı!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     
-                    // Open admin dashboard and hide login form
                     AdminDashboard dashboard = new AdminDashboard();
                     dashboard.Show();
                     this.Hide();
@@ -94,7 +89,6 @@ namespace OgrenciKayit
             txtPassword.PasswordChar = checkBoxShowPassword.Checked ? '\0' : '•';
         }
 
-        // Allow the form to be dragged
         private bool isDragging = false;
         private Point dragCursorPoint;
         private Point dragFormPoint;
